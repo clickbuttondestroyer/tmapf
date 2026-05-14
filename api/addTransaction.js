@@ -20,7 +20,7 @@ export default async function handler(req, res) {
 
   try {
     // Получаем данные транзакции от фронтенда
-    const { type, date, time, amount, account, category, description, netWorth } = req.body;
+    const { type, date, time, amount, account, category, description, cardAfterBalance } = req.body;
 
     // Vercel иногда "съедает" реальные переносы строк в переменных окружения. 
     // Эта строчка гарантирует, что приватный ключ прочитается корректно.
@@ -42,7 +42,7 @@ export default async function handler(req, res) {
 
     // Записываем новую строку в конец таблицы
     // Порядок должен совпадать с заголовками в твоей таблице!
-    await sheet.addRow([type, date, time, amount, account, category, description, netWorth]);
+    await sheet.addRow([type, date, time, amount, account, category, description, cardAfterBalance]);
 
     // Отвечаем фронтенду, что всё прошло успешно
     return res.status(200).json({ success: true, message: 'Транзакция успешно записана!' });
