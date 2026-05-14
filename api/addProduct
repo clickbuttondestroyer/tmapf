@@ -2,13 +2,12 @@ const { GoogleSpreadsheet } = require('google-spreadsheet');
 const { JWT } = require('google-auth-library');
 
 export default async function handler(req, res) {
-  // --- ДОБАВЛЕНЫ ПРАВИЛЬНЫЕ ЗАГОЛОВКИ CORS ---
+  // Заголовки CORS
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'OPTIONS,POST');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  // --- ОБРАБОТКА ПРЕФЛАЙТ-ЗАПРОСА ---
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
@@ -26,10 +25,8 @@ export default async function handler(req, res) {
       scopes: ['https://www.googleapis.com/auth/spreadsheets'],
     });
 
-    // --- ИСПРАВЛЕНИЕ ЗДЕСЬ: ЖЁСТКО ПРОПИСАННЫЙ ID ТАБЛИЦЫ ---
-    const SPREADSHEET_ID = '5JS4hJ1TWIuDDiggRwx4saNRZmVeEnJa2oiE1rGtkZ8';
-    const doc = new GoogleSpreadsheet(SPREADSHEET_ID, auth);
-    
+    // БЕРЕМ ПРАВИЛЬНЫЙ ID ИЗ НАСТРОЕК VERCEL
+    const doc = new GoogleSpreadsheet(process.env.SPREADSHEET_ID, auth);
     await doc.loadInfo();
 
     // Берем второй лист (Products)
