@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>YouFi Premium</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            /* Light Theme Colors */
+            --bg-color: #f2f2f7;
+            --text-main: #000000;
+            --text-muted: #8e8e93;
+            --card-bg: rgba(255, 255, 255, 0.6);
+            --card-border: rgba(255, 255, 255, 0.8);
+            --accent: #007aff;
+            --balance-bg: linear-gradient(135deg, #1d1d1f 0%, #434353 100%);
+            --balance-text: #ffffff;
+            --shadow-sm: 0 4px 15px rgba(0,0,0,0.03);
+            --shadow-md: 0 10px 30px rgba(0,0,0,0.08);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                /* Dark Theme Colors (OLED friendly) */
+                --bg-color: #000000;
+                --text-main: #ffffff;
+                --text-muted: #ebebf599;
+                --card-bg: rgba(28, 28, 30, 0.6);
+                --card-border: rgba(255, 255, 255, 0.05);
+                --balance-bg: linear-gradient(135deg, #007aff 0%, #004080 100%);
+                --shadow-sm: 0 4px 15px rgba(0,0,0,0.2);
+                --shadow-md: 0 10px 30px rgba(0,0,0,0.4);
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+            margin: 0;
+            padding: 20px 20px 100px 20px; /* Снизу отступ для кнопки */
+            -webkit-font-smoothing: antialiased;
+            transition: background-color 0.3s ease;
+        }
+
+        /* Премиальная карточка баланса */
+        .balance-card {
+            background: var(--balance-bg);
+            color: var(--balance-text);
+            border-radius: 28px;
+            padding: 30px 24px;
+            text-align: center;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Блик на карточке */
+        .balance-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: skewX(-20deg);
+            animation: shine 6s infinite;
+        }
+
+        @keyframes shine {
+            0% { left: -100%; }
+            20% { left: 200%; }
+            100% { left: 200%; }
+        }
+
+        .balance-title {
+            font-size: 14px;
+            font-weight: 500;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .balance-amount {
+            font-size: 46px;
+            font-weight: 700;
+            letter-spacing: -1px;
+        }
+
+        /* Заголовки секций */
+        .section-header {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0 0 16px 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Стеклянные карточки-списки */
+        .list-container {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 8px 20px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 24px;
+        }
+
+        .list-item {
+            display: flex;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .list-item:last-child {
+            border-bottom: none;
+        }
+
+        /* Индикаторы банков */
+        .bank-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 16px;
+        }
+        .dot-tbank { background-color: #ffdd2d; box-shadow: 0 0 10px rgba(255,221,45,0.4); }
+        .dot-sber { background-color: #21a038; box-shadow: 0 0 10px rgba(33,160,56,0.4); }
+        .dot-cash { background-color: #8e8e93; }
+        .dot-debt { background-color: #ff3b30; box-shadow: 0 0 10px rgba(255,59,48,0.4); }
+
+        .item-details {
+            flex-grow: 1;
+        }
+
+        .item-name {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .item-subtitle {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .item-value {
+            font-size: 17px;
+            font-weight: 600;
+        }
+
+        /* Спойлер для долгов */
+        details {
+            background: transparent;
+        }
+        
+        summary {
+            list-style: none;
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0 0 16px 8px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .chevron {
+            margin-left: auto;
+            margin-right: 8px;
+            transition: transform 0.3s ease;
+            color: var(--text-muted);
+        }
+
+        details[open] .chevron {
+            transform: rotate(180deg);
+        }
+
+        /* FAB Кнопка */
+        .fab-wrapper {
+            position: fixed;
+            bottom: 32px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            pointer-events: none; /* Чтобы клики проходили сквозь контейнер */
+        }
+
+        .fab {
+            pointer-events: auto;
+            background: var(--text-main);
+            color: var(--bg-color);
+            width: 64px;
+            height: 64px;
+            border-radius: 32px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 32px;
+            font-weight: 300;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .fab:active {
+            transform: scale(0.85);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="balance-card">
+        <div class="balance-title">Чистые активы</div>
+        <div class="balance-amount">125 000 ₽</div>
+    </div>
+
+    <div class="section-header">Мои активы</div>
+    <div class="list-container">
+        <div class="list-item">
+            <div class="bank-dot dot-tbank"></div>
+            <div class="item-details">
+                <div class="item-name">Т-Банк Black</div>
+                <div class="item-subtitle">Дебетовая карта</div>
+            </div>
+            <div class="item-value">85 000 ₽</div>
+        </div>
+        <div class="list-item">
+            <div class="bank-dot dot-sber"></div>
+            <div class="item-details">
+                <div class="item-name">Сбербанк</div>
+                <div class="item-subtitle">Накопительный счет</div>
+            </div>
+            <div class="item-value">30 000 ₽</div>
+        </div>
+        <div class="list-item">
+            <div class="bank-dot dot-cash"></div>
+            <div class="item-details">
+                <div class="item-name">Наличные</div>
+                <div class="item-subtitle">Кошелек</div>
+            </div>
+            <div class="item-value">10 000 ₽</div>
+        </div>
+    </div>
+
+    <details>
+        <summary>
+            Мои долги
+            <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+        </summary>
+        <div class="list-container">
+            <div class="list-item">
+                <div class="bank-dot dot-debt"></div>
+                <div class="item-details">
+                    <div class="item-name">Кредит наличными</div>
+                    <div class="item-subtitle">Ежемесячный платеж: 5 000 ₽</div>
+                </div>
+                <div class="item-value" style="color: #ff3b30;">-45 000 ₽</div>
+            </div>
+            <div class="list-item">
+                <div class="bank-dot dot-debt"></div>
+                <div class="item-details">
+                    <div class="item-name">Долг Игорю</div>
+                    <div class="item-subtitle">До 25 числа</div>
+                </div>
+                <div class="item-value" style="color: #ff3b30;">-10 000 ₽</div>
+            </div>
+        </div>
+    </details>
+
+    <div class="fab-wrapper">
+        <button class="fab" id="addBtn">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+        </button>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.ready();
+
+        // Окрашиваем хедер Telegram в цвет фона приложения для бесшовности
+        tg.setHeaderColor('bg_color');
+        tg.setBackgroundColor('bg_color');
+
+        const addBtn = document.getElementById('addBtn');
+        
+        addBtn.addEventListener('click', () => {
+            tg.HapticFeedback.impactOccurred('medium');
+            
+            // Здесь мы будем вызывать всплывающее окно (Bottom Sheet)
+            tg.showAlert('Тут выедет красивое меню: Доход, Расход или Перевод');
+        });
+
+        // Добавляем тактильную отдачу при открытии списка долгов
+        document.querySelector('details').addEventListener('toggle', (e) => {
+            if (e.target.open) {
+                tg.HapticFeedback.impactOccurred('light');
+            }
+        });
+    </script>
+</body>
+</html>
