@@ -26,7 +26,10 @@ export default async function handler(req, res) {
       scopes: ['https://www.googleapis.com/auth/spreadsheets'],
     });
 
-    const doc = new GoogleSpreadsheet(process.env.SPREADSHEET_ID, auth);
+    // --- ИСПРАВЛЕНИЕ ЗДЕСЬ: ЖЁСТКО ПРОПИСАННЫЙ ID ТАБЛИЦЫ ---
+    const SPREADSHEET_ID = '5JS4hJ1TWIuDDiggRwx4saNRZmVeEnJa2oiE1rGtkZ8';
+    const doc = new GoogleSpreadsheet(SPREADSHEET_ID, auth);
+    
     await doc.loadInfo();
 
     // Берем второй лист (Products)
