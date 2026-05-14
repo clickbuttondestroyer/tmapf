@@ -211,7 +211,8 @@
                     tg.HapticFeedback.notificationOccurred('success');
                     location.reload();
                 } else {
-                    tg.showAlert('Ошибка на сервере! Проверьте бэкенд.');
+                    const errData = await res.json();
+                    tg.showAlert('Ответ сервера: ' + errData.error);
                 }
             } catch (error) {
                 // Если нет интернета или ошибка CORS
