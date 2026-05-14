@@ -2,53 +2,94 @@ const { GoogleSpreadsheet } = require('google-spreadsheet');
 const { JWT } = require('google-auth-library');
 
 export default async function handler(req, res) {
-  // Настройка CORS, чтобы Telegram Mini App мог отправлять запросы без ошибок
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'OPTIONS,POST');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  // Обработка предварительного запроса (preflight) от браузера
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
+    if (req.method === 'OPTIONS') return res.status(200).end();
+    if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  // Принимаем только POST-запросы
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Метод не разрешен. Используйте POST.' });
-  }
+    try {
+        const { type, amount, card, toCard, category, description } = req.body;
+        const amountNum = parseFloat(amount);
 
-  try {
-    // Получаем данные транзакции от фронтенда
-    const { type, date, time, amount, card, category, description, cardAfterBalance } = req.body;
+        const auth = new JWT({
+            email: process.env.GOOGLE_CLIENT_EMAIL,
+            key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+            scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+        });
 
-    // Vercel иногда "съедает" реальные переносы строк в переменных окружения. 
-    // Эта строчка гарантирует, что приватный ключ прочитается корректно.
-    const privateKey = process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n');
+        const doc = new GoogleSpreadsheet(process.env.SPREADSHEET_ID, auth);
+        await doc.loadInfo();
 
-    // Настраиваем авторизацию для Google Sheets
-    const serviceAccountAuth = new JWT({
-      email: process.env.GOOGLE_CLIENT_EMAIL,
-      key: privateKey,
-      scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-    });
+        const logSheet = doc.sheetsByIndex[0]; // Operations
+        const prodSheet = doc.sheetsByIndex[1]; // Products
+        const prodRows = await prodSheet.getRows();
 
-    // Подключаемся к документу по ID
-    const doc = new GoogleSpreadsheet(process.env.SPREADSHEET_ID, serviceAccountAuth);
-    await doc.loadInfo(); // Загружаем информацию о документе
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('ru-RU');
+        const timeStr = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
 
-    // Выбираем первый лист (индекс 0) — наш лист Transactions
-    const sheet = doc.sheetsByIndex[0];
+        let finalBalance = 0;
 
-    // Записываем новую строку в конец таблицы
-    // Порядок должен совпадать с заголовками в твоей таблице!
-    await sheet.addRow([type, date, time, amount, card, category, description, cardAfterBalance]);
+        // ЛОГИКА ОБНОВЛЕНИЯ БАЛАНСОВ
+        if (type === 'Перевод') {
+            const fromRow = prodRows.find(r => r.get('Name') === card);
+            const toRow = prodRows.find(r => r.get('Name') === toCard);
 
-    // Отвечаем фронтенду, что всё прошло успешно
-    return res.status(200).json({ success: true, message: 'Транзакция успешно записана!' });
+            if (fromRow && toRow) {
+                fromRow.set('Balance', parseFloat(fromRow.get('Balance')) - amountNum);
+                toRow.set('Balance', parseFloat(toRow.get('Balance')) + amountNum);
+                await fromRow.save();
+                await toRow.save();
+                finalBalance = fromRow.get('Balance'); // Для лога берем остаток карты-отправителя
+            }
+        } else {
+            const row = prodRows.find(r => r.get('Name') === card);
+            if (row) {
+                let current = parseFloat(row.get('Balance'));
+                
+                if (type === 'Расход') current -= amountNum;
+                else if (type === 'Доход') current += amountNum;
+                
+                row.set('Balance', current);
+                await row.save();
+                finalBalance = current;
 
-  } catch (error) {
-    console.error('Ошибка записи в БД:', error);
-    return res.status(500).json({ error: 'Ошибка сервера', details: error.message });
-  }
+                // Если это погашение кредита/долга (категория "Кредиты" или "Долг")
+                // Находим этот долг в реестре и уменьшаем его сумму
+                if (category.includes('Кредит') || category.includes('Долг')) {
+                    const debtRow = prodRows.find(r => r.get('Name') === description); // В описании передаем имя долга
+                    if (debtRow) {
+                        let debtBalance = parseFloat(debtRow.get('Balance'));
+                        debtBalance -= amountNum;
+                        if (debtBalance <= 0) {
+                            // Если долг погашен — можно либо обнулить, либо оставить 0
+                            debtRow.set('Balance', 0);
+                        } else {
+                            debtRow.set('Balance', debtBalance);
+                        }
+                        await debtRow.save();
+                    }
+                }
+            }
+        }
+
+        // ЗАПИСЬ В ЛОГ ОПЕРАЦИЙ
+        await logSheet.addRow([
+            type, 
+            dateStr, 
+            timeStr, 
+            amountNum, 
+            type === 'Перевод' ? `${card} -> ${toCard}` : card, 
+            category, 
+            description, 
+            finalBalance
+        ]);
+
+        return res.status(200).json({ success: true });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: error.message });
+    }
 }

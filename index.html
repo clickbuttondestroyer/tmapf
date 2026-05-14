@@ -3,281 +3,216 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>YouFi Premium</title>
+    <title>YouFi</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        /* ... Весь предыдущий CSS остается ... */
         :root {
-            --bg-color: #f2f2f7;
-            --text-main: #000000;
-            --text-muted: #8e8e93;
-            --card-bg: rgba(255, 255, 255, 0.6);
-            --card-border: rgba(255, 255, 255, 0.8);
-            --accent: #007aff;
-            --balance-bg: linear-gradient(135deg, #1d1d1f 0%, #434353 100%);
-            --balance-text: #ffffff;
-            --shadow-sm: 0 4px 15px rgba(0,0,0,0.03);
-            --shadow-md: 0 10px 30px rgba(0,0,0,0.08);
-            --sheet-bg: #ffffff;
+            --bg: #f2f2f7; --text: #000; --muted: #8e8e93; --accent: #007aff;
+            --card: rgba(255,255,255,0.7); --border: rgba(0,0,0,0.05);
         }
-
         @media (prefers-color-scheme: dark) {
-            :root {
-                --bg-color: #000000;
-                --text-main: #ffffff;
-                --text-muted: #ebebf599;
-                --card-bg: rgba(28, 28, 30, 0.6);
-                --card-border: rgba(255, 255, 255, 0.05);
-                --balance-bg: linear-gradient(135deg, #007aff 0%, #004080 100%);
-                --shadow-sm: 0 4px 15px rgba(0,0,0,0.2);
-                --shadow-md: 0 10px 30px rgba(0,0,0,0.4);
-                --sheet-bg: #1c1c1e;
-            }
+            :root { --bg: #000; --text: #fff; --card: rgba(28,28,30,0.7); --border: rgba(255,255,255,0.1); }
         }
-
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body {
-            background-color: var(--bg-color); color: var(--text-main);
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
-            margin: 0; padding: 20px 20px 100px 20px;
-            -webkit-font-smoothing: antialiased; transition: background-color 0.3s ease;
-        }
-
-        /* Старые стили карточек (скопированы из предыдущего этапа для компактности) */
-        .balance-card { background: var(--balance-bg); color: var(--balance-text); border-radius: 28px; padding: 30px 24px; text-align: center; box-shadow: var(--shadow-md); margin-bottom: 32px; position: relative; overflow: hidden; }
-        .balance-title { font-size: 14px; font-weight: 500; opacity: 0.8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
-        .balance-amount { font-size: 46px; font-weight: 700; letter-spacing: -1px; }
-        .section-header { font-size: 20px; font-weight: 600; margin: 0 0 16px 8px; display: flex; justify-content: space-between; align-items: center; }
-        .list-container { background: var(--card-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--card-border); border-radius: 24px; padding: 8px 20px; box-shadow: var(--shadow-sm); margin-bottom: 24px; }
-        .list-item { display: flex; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--card-border); }
-        .list-item:last-child { border-bottom: none; }
-        .bank-dot { width: 12px; height: 12px; border-radius: 50%; margin-right: 16px; }
-        .dot-tbank { background-color: #ffdd2d; } .dot-sber { background-color: #21a038; } .dot-cash { background-color: #8e8e93; } .dot-debt { background-color: #ff3b30; }
-        .item-details { flex-grow: 1; }
-        .item-name { font-size: 16px; font-weight: 500; margin-bottom: 4px; }
-        .item-subtitle { font-size: 13px; color: var(--text-muted); }
-        .item-value { font-size: 17px; font-weight: 600; }
+        body { font-family: -apple-system, system-ui; background: var(--bg); color: var(--text); margin: 0; padding: 20px; padding-bottom: 100px; transition: 0.3s; }
         
-        .fab-wrapper { position: fixed; bottom: 32px; left: 0; width: 100%; display: flex; justify-content: center; pointer-events: none; z-index: 10; }
-        .fab { pointer-events: auto; background: var(--text-main); color: var(--bg-color); width: 64px; height: 64px; border-radius: 32px; display: flex; justify-content: center; align-items: center; font-size: 32px; box-shadow: 0 12px 30px rgba(0,0,0,0.3); border: none; cursor: pointer; transition: transform 0.2s; }
-        .fab:active { transform: scale(0.85); }
-
-        /* НОВЫЕ СТИЛИ: Всплывающая шторка (Bottom Sheet) */
-        .overlay {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
-            opacity: 0; pointer-events: none; transition: opacity 0.3s ease; z-index: 90;
+        /* Dashboard */
+        .net-card { 
+            background: linear-gradient(135deg, #1c1c1e, #444); color: #fff; 
+            padding: 30px; border-radius: 28px; text-align: center; margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
+        .net-card.positive { background: linear-gradient(135deg, #007aff, #00c6ff); }
+
+        /* Lists */
+        .section-header { font-size: 20px; font-weight: 700; margin: 20px 0 10px 5px; display: flex; justify-content: space-between; }
+        .list { background: var(--card); backdrop-filter: blur(15px); border-radius: 20px; padding: 5px 15px; margin-bottom: 20px; }
+        .item { display: flex; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid var(--border); }
+        .item:last-child { border-bottom: none; }
+        .item-name { font-weight: 500; }
+        .item-val { font-weight: 600; }
+
+        /* Sheets */
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); opacity: 0; pointer-events: none; transition: 0.3s; z-index: 100; }
         .overlay.active { opacity: 1; pointer-events: auto; }
+        .sheet { 
+            position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg); 
+            border-radius: 25px 25px 0 0; padding: 25px; z-index: 101;
+            transform: translateY(100%); transition: 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .sheet.active { transform: translateY(0); }
 
-        .bottom-sheet {
-            position: fixed; bottom: 0; left: 0; right: 0;
-            background: var(--sheet-bg); border-radius: 30px 30px 0 0;
-            padding: 24px; box-shadow: 0 -10px 40px rgba(0,0,0,0.15);
-            transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-            z-index: 100; display: flex; flex-direction: column; gap: 20px;
+        /* Inputs */
+        input, select { 
+            width: 100%; padding: 15px; border-radius: 12px; border: 1px solid var(--border);
+            background: var(--card); color: var(--text); font-size: 16px; margin-bottom: 10px; outline: none;
         }
-        .bottom-sheet.active { transform: translateY(0); }
+        .amount-big { font-size: 40px; text-align: center; font-weight: 700; border: none; background: none; }
 
-        /* Переключатель Типа операции */
-        .segmented-control {
-            display: flex; background: var(--bg-color); border-radius: 12px; padding: 4px;
+        .fab { 
+            position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; 
+            background: var(--text); color: var(--bg); border-radius: 30px; 
+            border: none; font-size: 30px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); z-index: 50;
         }
-        .segment-btn {
-            flex: 1; text-align: center; padding: 8px 0; border-radius: 10px;
-            font-size: 15px; font-weight: 500; cursor: pointer; transition: 0.2s;
-            color: var(--text-muted); border: none; background: transparent;
-        }
-        .segment-btn.active { background: var(--sheet-bg); color: var(--text-main); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-
-        /* Огромный ввод суммы */
-        .amount-input-wrapper { text-align: center; margin: 10px 0; }
-        .amount-input {
-            width: 100%; border: none; background: transparent; text-align: center;
-            font-size: 48px; font-weight: 700; color: var(--text-main);
-            outline: none; padding: 0;
-        }
-        .amount-input::placeholder { color: var(--text-muted); opacity: 0.5; }
-
-        /* Селекты и инпуты */
-        .form-group select, .form-group input {
-            width: 100%; padding: 16px; border-radius: 16px;
-            background: var(--bg-color); border: 1px solid var(--card-border);
-            color: var(--text-main); font-size: 17px; outline: none; margin-bottom: 12px;
-            appearance: none; /* Убираем стандартную стрелочку */
-        }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
-    <div class="balance-card">
-        <div class="balance-title">Чистые активы</div>
-        <div class="balance-amount" id="main-balance">125 000 ₽</div>
+    <div class="net-card" id="netCard">
+        <div style="opacity: 0.7; font-size: 13px; text-transform: uppercase;">Чистые активы</div>
+        <div style="font-size: 42px; font-weight: 800; margin: 5px 0;" id="totalNet">0 ₽</div>
     </div>
 
-    <div class="section-header">Мои активы</div>
-    <div class="list-container">
-        <div class="list-item">
-            <div class="bank-dot dot-tbank"></div>
-            <div class="item-details"><div class="item-name">Т-Банк Black</div></div>
-            <div class="item-value">85 000 ₽</div>
-        </div>
-    </div>
+    <div class="section-header">Активы <span id="addProd" style="color: var(--accent); font-size: 14px;">+ Добавить</span></div>
+    <div class="list" id="assetList"></div>
 
-    <div class="fab-wrapper">
-        <button class="fab" id="addBtn">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-        </button>
-    </div>
+    <details>
+        <summary class="section-header">Обязательства</summary>
+        <div class="list" id="debtList"></div>
+    </details>
+
+    <button class="fab" id="mainAdd">+</button>
 
     <div class="overlay" id="overlay"></div>
-    <div class="bottom-sheet" id="bottomSheet">
+
+    <div class="sheet" id="txSheet">
+        <select id="txType">
+            <option value="Расход">Расход</option>
+            <option value="Доход">Доход</option>
+            <option value="Перевод">Перевод</option>
+        </select>
+        <input type="number" id="txAmount" class="amount-big" placeholder="0 ₽">
         
-        <div class="segmented-control" id="typeToggle">
-            <button class="segment-btn active" data-type="Расход">Расход</button>
-            <button class="segment-btn" data-type="Доход">Доход</button>
-            <button class="segment-btn" data-type="Перевод">Перевод</button>
-        </div>
+        <select id="txCard"></select>
+        <select id="txToCard" class="hidden"></select>
+        <select id="txCat"></select>
+        <input type="text" id="txDesc" placeholder="Описание (или выбор долга)">
+    </div>
 
-        <div class="amount-input-wrapper">
-            <input type="number" id="formAmount" class="amount-input" placeholder="0 ₽" inputmode="decimal">
-        </div>
-
-        <div class="form-group">
-            <select id="formCard">
-                <option value="" disabled selected>Выберите карту/счет</option>
-                <option value="Т-Банк Black">Т-Банк Black</option>
-                <option value="Сбербанк">Сбербанк</option>
-                <option value="Наличные">Наличные</option>
-            </select>
-            
-            <select id="formCategory">
-                <option value="" disabled selected>Категория</option>
-                <option value="Продукты">🛒 Продукты</option>
-                <option value="Кафе и рестораны">🍔 Кафе и рестораны</option>
-                <option value="Транспорт">🚕 Транспорт</option>
-                <option value="Здоровье">💊 Здоровье</option>
-                <option value="Развлечения">🍿 Развлечения</option>
-            </select>
-
-            <input type="text" id="formDescription" placeholder="Комментарий (необязательно)">
-        </div>
+    <div class="sheet" id="prodSheet">
+        <div class="section-header">Новый продукт</div>
+        <input type="text" id="pName" placeholder="Название (Т-Банк, Долг Игорю...)">
+        <select id="pType">
+            <option value="Дебетовая">Дебетовая карта</option>
+            <option value="Наличные">Наличные</option>
+            <option value="Кредит">Кредит/Долг (Обязательство)</option>
+            <option value="Инвестиции">Инвестиции</option>
+        </select>
+        <input type="number" id="pBalance" placeholder="Начальный баланс">
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
-        tg.ready();
-        tg.setHeaderColor('bg_color');
-        tg.setBackgroundColor('bg_color');
+        
+        const API_URL = 'https://твоя-ссылка.vercel.app/api'; // ЗАМЕНИТЬ!
+        let products = [];
 
-        // ==== НАСТРОЙКИ ====
-        // ВАЖНО! ЗАМЕНИ НА СВОЮ ССЫЛКУ!
-        const API_URL = 'https://tmapf.vercel.app/api/addTransaction'; 
-        // ===================
+        // Категории
+        const cats = {
+            "Доход": ["Зарплата", "Проценты", "Инвестиции", "Кэшбэк", "Долг (вернули)", "Другое"],
+            "Расход": ["Продукты", "Электроника", "Транспорт", "Жилье", "Здоровье", "Кредиты/Долги", "Другое"]
+        };
 
-        // Элементы
-        const addBtn = document.getElementById('addBtn');
-        const overlay = document.getElementById('overlay');
-        const bottomSheet = document.getElementById('bottomSheet');
-        const typeButtons = document.querySelectorAll('.segment-btn');
-        let currentType = 'Расход';
+        async function loadData() {
+            // В реале тут fetch('/api/getProducts')
+            // Для теста можно забить массив или сделать отдельный API GET
+        }
 
-        // Открытие шторки
-        addBtn.addEventListener('click', () => {
-            tg.HapticFeedback.impactOccurred('medium');
-            overlay.classList.add('active');
-            bottomSheet.classList.add('active');
-            addBtn.style.display = 'none'; // Прячем плюс
+        function render() {
+            const assetList = document.getElementById('assetList');
+            const debtList = document.getElementById('debtList');
+            const txCard = document.getElementById('txCard');
+            const txToCard = document.getElementById('txToCard');
+            
+            assetList.innerHTML = ''; debtList.innerHTML = ''; txCard.innerHTML = ''; txToCard.innerHTML = '';
+            
+            let total = 0;
+            products.sort((a,b) => b.balance - a.balance).forEach(p => {
+                const isDebt = p.type === 'Кредит' || p.type === 'Долг';
+                const html = `<div class="item"><span class="item-name">${p.name}</span><span class="item-val">${p.balance.toLocaleString()} ₽</span></div>`;
+                
+                if (isDebt) { debtList.innerHTML += html; total -= p.balance; }
+                else { assetList.innerHTML += html; total += p.balance; }
 
-            // Настраиваем и показываем главную кнопку Telegram
-            tg.MainButton.setText('СОХРАНИТЬ');
-            tg.MainButton.color = tg.themeParams.button_color || '#007aff';
-            tg.MainButton.show();
-        });
+                const opt = `<option value="${p.name}">${p.name}</option>`;
+                txCard.innerHTML += opt;
+                txToCard.innerHTML += opt;
+            });
 
-        // Закрытие шторки при клике на темный фон
-        overlay.addEventListener('click', closeSheet);
+            document.getElementById('totalNet').innerText = `${total.toLocaleString()} ₽`;
+            document.getElementById('netCard').className = total >= 0 ? 'net-card positive' : 'net-card';
+        }
 
-        function closeSheet() {
-            overlay.classList.remove('active');
-            bottomSheet.classList.remove('active');
-            addBtn.style.display = 'flex';
+        // Логика UI
+        document.getElementById('mainAdd').onclick = () => {
+            showSheet('txSheet');
+            updateCats();
+        };
+        document.getElementById('addProd').onclick = () => showSheet('prodSheet');
+        document.getElementById('overlay').onclick = closeAll;
+
+        function showSheet(id) {
+            document.getElementById('overlay').classList.add('active');
+            document.getElementById(id).classList.add('active');
+            tg.MainButton.setText('СОХРАНИТЬ').show();
+            tg.MainButton.onClick(() => handleSave(id));
+        }
+
+        function closeAll() {
+            document.querySelectorAll('.sheet, .overlay').forEach(el => el.classList.remove('active'));
             tg.MainButton.hide();
         }
 
-        // Переключение типа (Расход/Доход/Перевод)
-        typeButtons.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                tg.HapticFeedback.impactOccurred('light');
-                typeButtons.forEach(b => b.classList.remove('active'));
-                e.target.classList.add('active');
-                currentType = e.target.dataset.type;
-                
-                // Меняем цвет главной кнопки: Красный для расхода, Зеленый для дохода
-                if(currentType === 'Расход') tg.MainButton.color = '#ff3b30';
-                else if(currentType === 'Доход') tg.MainButton.color = '#34c759';
-                else tg.MainButton.color = '#007aff';
-            });
-        });
+        document.getElementById('txType').onchange = (e) => {
+            const isTransfer = e.target.value === 'Перевод';
+            document.getElementById('txToCard').classList.toggle('hidden', !isTransfer);
+            document.getElementById('txCat').classList.toggle('hidden', isTransfer);
+            updateCats();
+        };
 
-        // Обработка нажатия на кнопку "СОХРАНИТЬ" в Telegram
-        tg.MainButton.onClick(async () => {
-            const amountStr = document.getElementById('formAmount').value;
-            const card = document.getElementById('formCard').value;
-            const category = document.getElementById('formCategory').value;
-            const description = document.getElementById('formDescription').value;
+        function updateCats() {
+            const type = document.getElementById('txType').value;
+            const catSelect = document.getElementById('txCat');
+            catSelect.innerHTML = (cats[type] || []).map(c => `<option value="${c}">${c}</option>`).join('');
+        }
 
-            if (!amountStr || !card || !category) {
-                tg.HapticFeedback.notificationOccurred('error');
-                tg.showAlert('Пожалуйста, введите сумму, карту и категорию!');
-                return;
-            }
-
-            // Формируем дату и время прямо сейчас
-            const now = new Date();
-            const dateStr = now.toLocaleDateString('ru-RU');
-            const timeStr = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
-
-            // Показываем индикатор загрузки на кнопке
+        async function handleSave(id) {
             tg.MainButton.showProgress();
+            let url = id === 'txSheet' ? `${API_URL}/addTransaction` : `${API_URL}/addProduct`;
+            let data = {};
 
-            const payload = {
-                type: currentType,
-                date: dateStr,
-                time: timeStr,
-                amount: parseFloat(amountStr),
-                card: card,
-                category: category,
-                description: description,
-                cardAfterBalance: 0 // Пока ставим 0, потом сделаем расчет
-            };
-
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (response.ok) {
-                    tg.HapticFeedback.notificationOccurred('success');
-                    
-                    // Очищаем форму
-                    document.getElementById('formAmount').value = '';
-                    document.getElementById('formDescription').value = '';
-                    
-                    closeSheet();
-                } else {
-                    throw new Error('Ошибка сервера');
-                }
-            } catch (err) {
-                tg.HapticFeedback.notificationOccurred('error');
-                tg.showAlert('Ошибка отправки: ' + err.message);
-            } finally {
-                tg.MainButton.hideProgress();
+            if (id === 'txSheet') {
+                data = {
+                    type: document.getElementById('txType').value,
+                    amount: document.getElementById('txAmount').value,
+                    card: document.getElementById('txCard').value,
+                    toCard: document.getElementById('txToCard').value,
+                    category: document.getElementById('txCat').value,
+                    description: document.getElementById('txDesc').value
+                };
+            } else {
+                data = {
+                    name: document.getElementById('pName').value,
+                    type: document.getElementById('pType').value,
+                    balance: document.getElementById('pBalance').value
+                };
             }
-        });
+
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            });
+
+            if (res.ok) {
+                tg.HapticFeedback.notificationOccurred('success');
+                location.reload();
+            } else {
+                tg.showAlert('Ошибка!');
+            }
+            tg.MainButton.hideProgress();
+        }
     </script>
 </body>
 </html>
