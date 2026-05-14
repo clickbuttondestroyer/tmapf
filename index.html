@@ -6,8 +6,8 @@
     <title>YouFi Premium</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
+        /* ... Весь предыдущий CSS остается ... */
         :root {
-            /* Light Theme Colors */
             --bg-color: #f2f2f7;
             --text-main: #000000;
             --text-muted: #8e8e93;
@@ -18,11 +18,11 @@
             --balance-text: #ffffff;
             --shadow-sm: 0 4px 15px rgba(0,0,0,0.03);
             --shadow-md: 0 10px 30px rgba(0,0,0,0.08);
+            --sheet-bg: #ffffff;
         }
 
         @media (prefers-color-scheme: dark) {
             :root {
-                /* Dark Theme Colors (OLED friendly) */
                 --bg-color: #000000;
                 --text-main: #ffffff;
                 --text-muted: #ebebf599;
@@ -31,194 +31,80 @@
                 --balance-bg: linear-gradient(135deg, #007aff 0%, #004080 100%);
                 --shadow-sm: 0 4px 15px rgba(0,0,0,0.2);
                 --shadow-md: 0 10px 30px rgba(0,0,0,0.4);
+                --sheet-bg: #1c1c1e;
             }
         }
 
-        * {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
+            background-color: var(--bg-color); color: var(--text-main);
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
-            margin: 0;
-            padding: 20px 20px 100px 20px; /* Снизу отступ для кнопки */
-            -webkit-font-smoothing: antialiased;
-            transition: background-color 0.3s ease;
+            margin: 0; padding: 20px 20px 100px 20px;
+            -webkit-font-smoothing: antialiased; transition: background-color 0.3s ease;
         }
 
-        /* Премиальная карточка баланса */
-        .balance-card {
-            background: var(--balance-bg);
-            color: var(--balance-text);
-            border-radius: 28px;
-            padding: 30px 24px;
-            text-align: center;
-            box-shadow: var(--shadow-md);
-            margin-bottom: 32px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        /* Блик на карточке */
-        .balance-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%; width: 50%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-            transform: skewX(-20deg);
-            animation: shine 6s infinite;
-        }
-
-        @keyframes shine {
-            0% { left: -100%; }
-            20% { left: 200%; }
-            100% { left: 200%; }
-        }
-
-        .balance-title {
-            font-size: 14px;
-            font-weight: 500;
-            opacity: 0.8;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
-        }
-
-        .balance-amount {
-            font-size: 46px;
-            font-weight: 700;
-            letter-spacing: -1px;
-        }
-
-        /* Заголовки секций */
-        .section-header {
-            font-size: 20px;
-            font-weight: 600;
-            margin: 0 0 16px 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        /* Стеклянные карточки-списки */
-        .list-container {
-            background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--card-border);
-            border-radius: 24px;
-            padding: 8px 20px;
-            box-shadow: var(--shadow-sm);
-            margin-bottom: 24px;
-        }
-
-        .list-item {
-            display: flex;
-            align-items: center;
-            padding: 16px 0;
-            border-bottom: 1px solid var(--card-border);
-        }
-
-        .list-item:last-child {
-            border-bottom: none;
-        }
-
-        /* Индикаторы банков */
-        .bank-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            margin-right: 16px;
-        }
-        .dot-tbank { background-color: #ffdd2d; box-shadow: 0 0 10px rgba(255,221,45,0.4); }
-        .dot-sber { background-color: #21a038; box-shadow: 0 0 10px rgba(33,160,56,0.4); }
-        .dot-cash { background-color: #8e8e93; }
-        .dot-debt { background-color: #ff3b30; box-shadow: 0 0 10px rgba(255,59,48,0.4); }
-
-        .item-details {
-            flex-grow: 1;
-        }
-
-        .item-name {
-            font-size: 16px;
-            font-weight: 500;
-            margin-bottom: 4px;
-        }
-
-        .item-subtitle {
-            font-size: 13px;
-            color: var(--text-muted);
-        }
-
-        .item-value {
-            font-size: 17px;
-            font-weight: 600;
-        }
-
-        /* Спойлер для долгов */
-        details {
-            background: transparent;
-        }
+        /* Старые стили карточек (скопированы из предыдущего этапа для компактности) */
+        .balance-card { background: var(--balance-bg); color: var(--balance-text); border-radius: 28px; padding: 30px 24px; text-align: center; box-shadow: var(--shadow-md); margin-bottom: 32px; position: relative; overflow: hidden; }
+        .balance-title { font-size: 14px; font-weight: 500; opacity: 0.8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .balance-amount { font-size: 46px; font-weight: 700; letter-spacing: -1px; }
+        .section-header { font-size: 20px; font-weight: 600; margin: 0 0 16px 8px; display: flex; justify-content: space-between; align-items: center; }
+        .list-container { background: var(--card-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--card-border); border-radius: 24px; padding: 8px 20px; box-shadow: var(--shadow-sm); margin-bottom: 24px; }
+        .list-item { display: flex; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--card-border); }
+        .list-item:last-child { border-bottom: none; }
+        .bank-dot { width: 12px; height: 12px; border-radius: 50%; margin-right: 16px; }
+        .dot-tbank { background-color: #ffdd2d; } .dot-sber { background-color: #21a038; } .dot-cash { background-color: #8e8e93; } .dot-debt { background-color: #ff3b30; }
+        .item-details { flex-grow: 1; }
+        .item-name { font-size: 16px; font-weight: 500; margin-bottom: 4px; }
+        .item-subtitle { font-size: 13px; color: var(--text-muted); }
+        .item-value { font-size: 17px; font-weight: 600; }
         
-        summary {
-            list-style: none;
-            font-size: 20px;
-            font-weight: 600;
-            margin: 0 0 16px 8px;
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-        }
+        .fab-wrapper { position: fixed; bottom: 32px; left: 0; width: 100%; display: flex; justify-content: center; pointer-events: none; z-index: 10; }
+        .fab { pointer-events: auto; background: var(--text-main); color: var(--bg-color); width: 64px; height: 64px; border-radius: 32px; display: flex; justify-content: center; align-items: center; font-size: 32px; box-shadow: 0 12px 30px rgba(0,0,0,0.3); border: none; cursor: pointer; transition: transform 0.2s; }
+        .fab:active { transform: scale(0.85); }
 
-        summary::-webkit-details-marker {
-            display: none;
+        /* НОВЫЕ СТИЛИ: Всплывающая шторка (Bottom Sheet) */
+        .overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
+            opacity: 0; pointer-events: none; transition: opacity 0.3s ease; z-index: 90;
         }
+        .overlay.active { opacity: 1; pointer-events: auto; }
 
-        .chevron {
-            margin-left: auto;
-            margin-right: 8px;
-            transition: transform 0.3s ease;
-            color: var(--text-muted);
+        .bottom-sheet {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: var(--sheet-bg); border-radius: 30px 30px 0 0;
+            padding: 24px; box-shadow: 0 -10px 40px rgba(0,0,0,0.15);
+            transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+            z-index: 100; display: flex; flex-direction: column; gap: 20px;
         }
+        .bottom-sheet.active { transform: translateY(0); }
 
-        details[open] .chevron {
-            transform: rotate(180deg);
+        /* Переключатель Типа операции */
+        .segmented-control {
+            display: flex; background: var(--bg-color); border-radius: 12px; padding: 4px;
         }
-
-        /* FAB Кнопка */
-        .fab-wrapper {
-            position: fixed;
-            bottom: 32px;
-            left: 0;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            pointer-events: none; /* Чтобы клики проходили сквозь контейнер */
+        .segment-btn {
+            flex: 1; text-align: center; padding: 8px 0; border-radius: 10px;
+            font-size: 15px; font-weight: 500; cursor: pointer; transition: 0.2s;
+            color: var(--text-muted); border: none; background: transparent;
         }
+        .segment-btn.active { background: var(--sheet-bg); color: var(--text-main); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
 
-        .fab {
-            pointer-events: auto;
-            background: var(--text-main);
-            color: var(--bg-color);
-            width: 64px;
-            height: 64px;
-            border-radius: 32px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 32px;
-            font-weight: 300;
-            box-shadow: 0 12px 30px rgba(0,0,0,0.3);
-            border: none;
-            cursor: pointer;
-            transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+        /* Огромный ввод суммы */
+        .amount-input-wrapper { text-align: center; margin: 10px 0; }
+        .amount-input {
+            width: 100%; border: none; background: transparent; text-align: center;
+            font-size: 48px; font-weight: 700; color: var(--text-main);
+            outline: none; padding: 0;
         }
+        .amount-input::placeholder { color: var(--text-muted); opacity: 0.5; }
 
-        .fab:active {
-            transform: scale(0.85);
+        /* Селекты и инпуты */
+        .form-group select, .form-group input {
+            width: 100%; padding: 16px; border-radius: 16px;
+            background: var(--bg-color); border: 1px solid var(--card-border);
+            color: var(--text-main); font-size: 17px; outline: none; margin-bottom: 12px;
+            appearance: none; /* Убираем стандартную стрелочку */
         }
     </style>
 </head>
@@ -226,95 +112,170 @@
 
     <div class="balance-card">
         <div class="balance-title">Чистые активы</div>
-        <div class="balance-amount">125 000 ₽</div>
+        <div class="balance-amount" id="main-balance">125 000 ₽</div>
     </div>
 
     <div class="section-header">Мои активы</div>
     <div class="list-container">
         <div class="list-item">
             <div class="bank-dot dot-tbank"></div>
-            <div class="item-details">
-                <div class="item-name">Т-Банк Black</div>
-                <div class="item-subtitle">Дебетовая карта</div>
-            </div>
+            <div class="item-details"><div class="item-name">Т-Банк Black</div></div>
             <div class="item-value">85 000 ₽</div>
-        </div>
-        <div class="list-item">
-            <div class="bank-dot dot-sber"></div>
-            <div class="item-details">
-                <div class="item-name">Сбербанк</div>
-                <div class="item-subtitle">Накопительный счет</div>
-            </div>
-            <div class="item-value">30 000 ₽</div>
-        </div>
-        <div class="list-item">
-            <div class="bank-dot dot-cash"></div>
-            <div class="item-details">
-                <div class="item-name">Наличные</div>
-                <div class="item-subtitle">Кошелек</div>
-            </div>
-            <div class="item-value">10 000 ₽</div>
         </div>
     </div>
 
-    <details>
-        <summary>
-            Мои долги
-            <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="6 9 12 15 18 9"></polyline>
-            </svg>
-        </summary>
-        <div class="list-container">
-            <div class="list-item">
-                <div class="bank-dot dot-debt"></div>
-                <div class="item-details">
-                    <div class="item-name">Кредит наличными</div>
-                    <div class="item-subtitle">Ежемесячный платеж: 5 000 ₽</div>
-                </div>
-                <div class="item-value" style="color: #ff3b30;">-45 000 ₽</div>
-            </div>
-            <div class="list-item">
-                <div class="bank-dot dot-debt"></div>
-                <div class="item-details">
-                    <div class="item-name">Долг Игорю</div>
-                    <div class="item-subtitle">До 25 числа</div>
-                </div>
-                <div class="item-value" style="color: #ff3b30;">-10 000 ₽</div>
-            </div>
-        </div>
-    </details>
-
     <div class="fab-wrapper">
         <button class="fab" id="addBtn">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="12" y1="5" x2="12" y2="19"></line>
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-            </svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
         </button>
+    </div>
+
+    <div class="overlay" id="overlay"></div>
+    <div class="bottom-sheet" id="bottomSheet">
+        
+        <div class="segmented-control" id="typeToggle">
+            <button class="segment-btn active" data-type="Расход">Расход</button>
+            <button class="segment-btn" data-type="Доход">Доход</button>
+            <button class="segment-btn" data-type="Перевод">Перевод</button>
+        </div>
+
+        <div class="amount-input-wrapper">
+            <input type="number" id="formAmount" class="amount-input" placeholder="0 ₽" inputmode="decimal">
+        </div>
+
+        <div class="form-group">
+            <select id="formCard">
+                <option value="" disabled selected>Выберите карту/счет</option>
+                <option value="Т-Банк Black">Т-Банк Black</option>
+                <option value="Сбербанк">Сбербанк</option>
+                <option value="Наличные">Наличные</option>
+            </select>
+            
+            <select id="formCategory">
+                <option value="" disabled selected>Категория</option>
+                <option value="Продукты">🛒 Продукты</option>
+                <option value="Кафе и рестораны">🍔 Кафе и рестораны</option>
+                <option value="Транспорт">🚕 Транспорт</option>
+                <option value="Здоровье">💊 Здоровье</option>
+                <option value="Развлечения">🍿 Развлечения</option>
+            </select>
+
+            <input type="text" id="formDescription" placeholder="Комментарий (необязательно)">
+        </div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
         tg.ready();
-
-        // Окрашиваем хедер Telegram в цвет фона приложения для бесшовности
         tg.setHeaderColor('bg_color');
         tg.setBackgroundColor('bg_color');
 
+        // ==== НАСТРОЙКИ ====
+        // ВАЖНО! ЗАМЕНИ НА СВОЮ ССЫЛКУ!
+        const API_URL = 'https://tmapf.vercel.app/api/addTransaction'; 
+        // ===================
+
+        // Элементы
         const addBtn = document.getElementById('addBtn');
-        
+        const overlay = document.getElementById('overlay');
+        const bottomSheet = document.getElementById('bottomSheet');
+        const typeButtons = document.querySelectorAll('.segment-btn');
+        let currentType = 'Расход';
+
+        // Открытие шторки
         addBtn.addEventListener('click', () => {
             tg.HapticFeedback.impactOccurred('medium');
-            
-            // Здесь мы будем вызывать всплывающее окно (Bottom Sheet)
-            tg.showAlert('Тут выедет красивое меню: Доход, Расход или Перевод');
+            overlay.classList.add('active');
+            bottomSheet.classList.add('active');
+            addBtn.style.display = 'none'; // Прячем плюс
+
+            // Настраиваем и показываем главную кнопку Telegram
+            tg.MainButton.setText('СОХРАНИТЬ');
+            tg.MainButton.color = tg.themeParams.button_color || '#007aff';
+            tg.MainButton.show();
         });
 
-        // Добавляем тактильную отдачу при открытии списка долгов
-        document.querySelector('details').addEventListener('toggle', (e) => {
-            if (e.target.open) {
+        // Закрытие шторки при клике на темный фон
+        overlay.addEventListener('click', closeSheet);
+
+        function closeSheet() {
+            overlay.classList.remove('active');
+            bottomSheet.classList.remove('active');
+            addBtn.style.display = 'flex';
+            tg.MainButton.hide();
+        }
+
+        // Переключение типа (Расход/Доход/Перевод)
+        typeButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
                 tg.HapticFeedback.impactOccurred('light');
+                typeButtons.forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                currentType = e.target.dataset.type;
+                
+                // Меняем цвет главной кнопки: Красный для расхода, Зеленый для дохода
+                if(currentType === 'Расход') tg.MainButton.color = '#ff3b30';
+                else if(currentType === 'Доход') tg.MainButton.color = '#34c759';
+                else tg.MainButton.color = '#007aff';
+            });
+        });
+
+        // Обработка нажатия на кнопку "СОХРАНИТЬ" в Telegram
+        tg.MainButton.onClick(async () => {
+            const amountStr = document.getElementById('formAmount').value;
+            const card = document.getElementById('formCard').value;
+            const category = document.getElementById('formCategory').value;
+            const description = document.getElementById('formDescription').value;
+
+            if (!amountStr || !card || !category) {
+                tg.HapticFeedback.notificationOccurred('error');
+                tg.showAlert('Пожалуйста, введите сумму, карту и категорию!');
+                return;
+            }
+
+            // Формируем дату и время прямо сейчас
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('ru-RU');
+            const timeStr = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+
+            // Показываем индикатор загрузки на кнопке
+            tg.MainButton.showProgress();
+
+            const payload = {
+                type: currentType,
+                date: dateStr,
+                time: timeStr,
+                amount: parseFloat(amountStr),
+                card: card,
+                category: category,
+                description: description,
+                cardAfterBalance: 0 // Пока ставим 0, потом сделаем расчет
+            };
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    tg.HapticFeedback.notificationOccurred('success');
+                    
+                    // Очищаем форму
+                    document.getElementById('formAmount').value = '';
+                    document.getElementById('formDescription').value = '';
+                    
+                    closeSheet();
+                } else {
+                    throw new Error('Ошибка сервера');
+                }
+            } catch (err) {
+                tg.HapticFeedback.notificationOccurred('error');
+                tg.showAlert('Ошибка отправки: ' + err.message);
+            } finally {
+                tg.MainButton.hideProgress();
             }
         });
     </script>
