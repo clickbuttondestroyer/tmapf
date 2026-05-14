@@ -177,7 +177,7 @@
             catSelect.innerHTML = (cats[type] || []).map(c => `<option value="${c}">${c}</option>`).join('');
         }
 
-        async function handleSave(id) {
+       async function handleSave(id) {
             tg.MainButton.showProgress();
             let url = id === 'txSheet' ? `${API_URL}/addTransaction` : `${API_URL}/addProduct`;
             let data = {};
@@ -199,19 +199,27 @@
                 };
             }
 
-            const res = await fetch(url, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(data)
-            });
+            // Оборачиваем запрос в try...catch, чтобы ловить ошибки
+            try {
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                });
 
-            if (res.ok) {
-                tg.HapticFeedback.notificationOccurred('success');
-                location.reload();
-            } else {
-                tg.showAlert('Ошибка!');
+                if (res.ok) {
+                    tg.HapticFeedback.notificationOccurred('success');
+                    location.reload();
+                } else {
+                    tg.showAlert('Ошибка на сервере! Проверьте бэкенд.');
+                }
+            } catch (error) {
+                // Если нет интернета или ошибка CORS
+                tg.showAlert('Ошибка сети: ' + error.message);
+            } finally {
+                // Это выполнится В ЛЮБОМ СЛУЧАЕ, и вечной загрузки больше не будет
+                tg.MainButton.hideProgress();
             }
-            tg.MainButton.hideProgress();
         }
     </script>
 </body>
