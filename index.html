@@ -322,7 +322,7 @@
             let data = {};
             if (id === 'txSheet') data = { type: document.getElementById('txType').value, amount: document.getElementById('txAmount').value, card: document.getElementById('txCard').value, category: document.getElementById('txCat').value };
             else if (id === 'prodSheet') data = { name: document.getElementById('pName').value, type: document.getElementById('pType').value, balance: document.getElementById('pBalance').value };
-            else data = { source: document.getElementById('cashSource').value, category: document.getElementById('cashCat').value, percent: document.getElementById('cashPercent').value, period: document.getElementById('cashPeriod').value };
+            else data = { source: document.getElementById('cashSource').value, category: document.getElementById('cashCat').value, value: document.getElementById('cashPercent').value, period: document.getElementById('cashPeriod').value };
 
             tg.MainButton.showProgress();
             try {
