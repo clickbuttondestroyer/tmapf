@@ -9,14 +9,13 @@
         :root {
             --bg: #f2f2f7; --text: #000; --muted: #8e8e93; --accent: #007aff;
             --card: rgba(255,255,255,0.8); --border: rgba(0,0,0,0.08);
-            --positive: #34c759;
+            --positive: #34c759; --danger: #ff3b30;
         }
         @media (prefers-color-scheme: dark) {
             :root { --bg: #000; --text: #fff; --card: rgba(28,28,30,0.8); --border: rgba(255,255,255,0.15); }
         }
         body { font-family: -apple-system, system-ui; background: var(--bg); color: var(--text); margin: 0; padding: 20px; padding-bottom: 120px; transition: 0.3s; overflow-x: hidden; }
         
-        /* Dashboard */
         .net-card { 
             background: linear-gradient(135deg, #1c1c1e, #444); color: #fff; 
             padding: 35px 20px; border-radius: 32px; text-align: center; margin-bottom: 30px;
@@ -24,10 +23,10 @@
         }
         .net-card.positive { background: linear-gradient(135deg, #007aff, #00c6ff); }
 
-        /* Lists */
         .section-header { font-size: 22px; font-weight: 700; margin: 25px 0 12px 5px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
         .list { background: var(--card); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 24px; padding: 5px 18px; margin-bottom: 20px; }
-        .item { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--border); }
+        .item { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--border); cursor: pointer; }
+        .item:active { background: var(--border); border-radius: 12px; }
         .item:last-child { border-bottom: none; }
         .item-icon { width: 42px; height: 42px; background: var(--border); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; margin-right: 14px; }
         .item-info { flex: 1; }
@@ -35,7 +34,6 @@
         .item-sub { font-size: 13px; color: var(--muted); display: block; }
         .item-val { font-weight: 700; font-size: 16px; }
 
-        /* Premium Sheets */
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); opacity: 0; pointer-events: none; transition: 0.3s; z-index: 100; backdrop-filter: blur(5px); }
         .overlay.active { opacity: 1; pointer-events: auto; }
         .sheet { 
@@ -43,12 +41,12 @@
             border-radius: 35px 35px 0 0; padding: 30px 25px; z-index: 101;
             transform: translateY(100%); transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1);
             box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
+            max-height: 90vh; overflow-y: auto;
         }
         .sheet.active { transform: translateY(0); }
         .sheet-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .close-btn { width: 32px; height: 32px; background: var(--border); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; color: var(--muted); }
 
-        /* Forms */
         input, select { 
             width: 100%; padding: 16px; border-radius: 16px; border: 1px solid var(--border);
             background: var(--card); color: var(--text); font-size: 17px; margin-bottom: 12px; outline: none; box-sizing: border-box;
@@ -56,13 +54,14 @@
         label { font-size: 13px; color: var(--muted); margin: 0 0 6px 6px; display: block; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
         .amount-big { font-size: 48px; text-align: center; font-weight: 800; border: none !important; background: none !important; margin: 10px 0 25px 0; color: var(--text); }
 
+        .btn-danger { width: 100%; padding: 16px; border-radius: 16px; border: none; background: var(--danger); color: #fff; font-size: 17px; font-weight: 700; margin-top: 10px; cursor: pointer; }
+
         .fab { 
             position: fixed; bottom: 35px; right: 25px; width: 68px; height: 68px; 
             background: var(--text); color: var(--bg); border-radius: 34px; 
             border: none; font-size: 36px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 50;
             display: flex; align-items: center; justify-content: center; transition: 0.2s;
         }
-        .fab:active { transform: scale(0.9); }
         
         details summary { list-style: none; outline: none; }
         details summary::-webkit-details-marker { display: none; }
@@ -88,7 +87,7 @@
                     <span class="arrow">▶</span>
                 </span>
             </summary>
-            <div id="assetList" class="list"><div class="loader">Загрузка...</div></div>
+            <div id="assetList" class="list"></div>
         </details>
 
         <details>
@@ -112,7 +111,7 @@
     <!-- Sheet: Transaction -->
     <div class="sheet" id="txSheet">
         <div class="sheet-header">
-            <span style="font-size: 20px; font-weight: 800;">Новая операция</span>
+            <span id="txSheetTitle" style="font-size: 20px; font-weight: 800;">Новая операция</span>
             <div class="close-btn" onclick="closeAll()">✕</div>
         </div>
         
@@ -140,6 +139,8 @@
 
         <label>Описание</label>
         <input type="text" id="txDesc" placeholder="Заметки...">
+
+        <button id="btnDeleteTx" class="btn-danger hidden">Удалить операцию</button>
     </div>
 
     <!-- Sheet: Product -->
@@ -148,10 +149,8 @@
             <span style="font-size: 20px; font-weight: 800;">Новый продукт</span>
             <div class="close-btn" onclick="closeAll()">✕</div>
         </div>
-        
         <label>Название</label>
         <input type="text" id="pName" placeholder="Т-Банк, Наличные...">
-        
         <label>Вид</label>
         <select id="pType">
             <option value="Дебетовая">💳 Дебетовая карта</option>
@@ -160,7 +159,6 @@
             <option value="Инвестиции">📈 Инвестиции</option>
             <option value="Вклад">💰 Вклад / Счёт</option>
         </select>
-        
         <label>Баланс</label>
         <input type="number" id="pBalance" placeholder="0" inputmode="decimal">
     </div>
@@ -172,17 +170,14 @@
         const API_URL = window.location.origin + '/api';
         let products = [];
         let transactions = [];
+        let editingTxId = null;
 
         const catIcons = {
             "Продукты": "🛒", "Электроника": "💻", "Транспорт": "🚗", "Жилье": "🏠", 
             "Здоровье": "💊", "Кредиты/Долги": "🏦", "Зарплата": "💰", "Проценты": "📈", 
-            "Инвестиции": "📊", "Кэшбэк": "💸", "Долг (вернули)": "🤝", "Другое": "📦"
+            "Инвестиции": "📊", "Кэшбэк": "💸", "Долг (вернули) (погашение)": "🤝", "Другое": "📦"
         };
-
-        const prodIcons = {
-            "Дебетовая": "💳", "Наличные": "💵", "Кредит": "🏦", "Инвестиции": "📈", "Вклад": "💰"
-        };
-
+        const prodIcons = { "Дебетовая": "💳", "Наличные": "💵", "Кредит": "🏦", "Инвестиции": "📈", "Вклад": "💰" };
         const cats = {
             "Доход": ["Зарплата", "Проценты", "Инвестиции", "Кэшбэк", "Долг (вернули) (погашение)", "Другое"],
             "Расход": ["Продукты", "Электроника", "Транспорт", "Жилье", "Здоровье", "Кредиты/Долги (погашение)", "Другое"]
@@ -191,14 +186,11 @@
         async function init() {
             try {
                 const res = await fetch(`${API_URL}/getData`);
-                if (!res.ok) throw new Error('Ошибка связи');
                 const data = await res.json();
                 products = data.products || [];
                 transactions = data.transactions || [];
                 render();
-            } catch (e) {
-                document.getElementById('assetList').innerHTML = `<div class="loader">${e.message}</div>`;
-            }
+            } catch (e) { console.error(e); }
         }
 
         function render() {
@@ -216,19 +208,9 @@
             products.forEach(p => {
                 const isDebt = p.type.includes('Кредит') || p.type.includes('Долг');
                 const icon = prodIcons[Object.keys(prodIcons).find(k => p.type.includes(k))] || "💳";
-                const html = `
-                    <div class="item">
-                        <div class="item-icon">${icon}</div>
-                        <div class="item-info">
-                            <span class="item-name">${p.name}</span>
-                            <span class="item-sub">${p.type}</span>
-                        </div>
-                        <span class="item-val">${p.balance.toLocaleString()} ₽</span>
-                    </div>`;
-                
+                const html = `<div class="item"><div class="item-icon">${icon}</div><div class="item-info"><span class="item-name">${p.name}</span><span class="item-sub">${p.type}</span></div><span class="item-val">${p.balance.toLocaleString()} ₽</span></div>`;
                 if (isDebt) { debtList.innerHTML += html; total -= p.balance; }
                 else { assetList.innerHTML += html; total += p.balance; }
-
                 const opt = `<option value="${p.name}">${p.name}</option>`;
                 txCard.innerHTML += opt; txToCard.innerHTML += opt;
             });
@@ -237,39 +219,53 @@
                 const isPlus = t.type === 'Доход';
                 const icon = catIcons[t.category] || (isPlus ? "➕" : "➖");
                 const amount = parseFloat(t.amount.toString().replace(',', '.'));
-                txList.innerHTML += `
-                    <div class="item">
-                        <div class="item-icon">${icon}</div>
-                        <div class="item-info">
-                            <span class="item-name">${t.category || t.type}</span>
-                            <span class="item-sub">${t.card} • ${t.date}</span>
-                        </div>
-                        <span class="item-val" style="color: ${isPlus ? 'var(--positive)' : 'inherit'}">
-                            ${isPlus ? '+' : ''}${amount.toLocaleString()} ₽
-                        </span>
-                    </div>`;
+                const el = document.createElement('div');
+                el.className = 'item';
+                el.innerHTML = `<div class="item-icon">${icon}</div><div class="item-info"><span class="item-name">${t.category || t.type}</span><span class="item-sub">${t.card} • ${t.date}</span></div><span class="item-val" style="color: ${isPlus ? 'var(--positive)' : 'inherit'}">${isPlus ? '+' : ''}${amount.toLocaleString()} ₽</span>`;
+                el.onclick = () => openEditTx(t);
+                txList.appendChild(el);
             });
 
             document.getElementById('totalNet').innerText = `${total.toLocaleString()} ₽`;
             document.getElementById('netCard').className = total >= 0 ? 'net-card positive' : 'net-card';
-            
-            if (products.length === 0) assetList.innerHTML = '<div class="loader">Пусто</div>';
-            if (transactions.length === 0) txList.innerHTML = '<div class="loader">Операций пока нет</div>';
         }
 
-        document.getElementById('mainAdd').onclick = () => showSheet('txSheet');
+        function openEditTx(t) {
+            editingTxId = t.id;
+            document.getElementById('txSheetTitle').innerText = 'Редактировать';
+            document.getElementById('txAmount').value = t.amount.toString().replace(',', '.');
+            document.getElementById('txType').value = t.type;
+            document.getElementById('txCard').value = t.card;
+            document.getElementById('txDesc').value = t.description || '';
+            document.getElementById('btnDeleteTx').classList.remove('hidden');
+            
+            document.getElementById('divTo').classList.toggle('hidden', t.type !== 'Перевод');
+            document.getElementById('divCat').classList.toggle('hidden', t.type === 'Перевод');
+            
+            showSheet('txSheet', true);
+            setTimeout(() => {
+                document.getElementById('txCat').value = t.category;
+            }, 50);
+        }
+
+        document.getElementById('mainAdd').onclick = () => {
+            editingTxId = null;
+            document.getElementById('txSheetTitle').innerText = 'Новая операция';
+            document.getElementById('btnDeleteTx').classList.add('hidden');
+            showSheet('txSheet');
+        };
         document.getElementById('addProd').onclick = (e) => { e.preventDefault(); showSheet('prodSheet'); };
         document.getElementById('overlay').onclick = closeAll;
 
-        function showSheet(id) {
+        function showSheet(id, isEdit = false) {
             const sheet = document.getElementById(id);
-            sheet.querySelectorAll('input').forEach(i => i.value = '');
-            sheet.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
-            
+            if (!isEdit) {
+                sheet.querySelectorAll('input').forEach(i => i.value = '');
+                sheet.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
+            }
             document.getElementById('overlay').classList.add('active');
             sheet.classList.add('active');
             updateCats();
-            
             tg.MainButton.offClick(handleSaveWrapper);
             tg.MainButton.setText('СОХРАНИТЬ').show();
             tg.MainButton.onClick(handleSaveWrapper);
@@ -295,10 +291,34 @@
         function updateCats() {
             const type = document.getElementById('txType').value;
             const catSelect = document.getElementById('txCat');
+            const currentVal = catSelect.value;
             catSelect.innerHTML = (cats[type] || []).map(c => `<option value="${c}">${c}</option>`).join('');
+            if (currentVal) catSelect.value = currentVal;
         }
 
+        document.getElementById('btnDeleteTx').onclick = async () => {
+            if (!confirm('Удалить эту операцию? Баланс карты будет восстановлен.')) return;
+            tg.MainButton.showProgress();
+            try {
+                const res = await fetch(`${API_URL}/deleteTransaction`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ id: editingTxId })
+                });
+                if (res.ok) {
+                    tg.HapticFeedback.notificationOccurred('success');
+                    closeAll();
+                    init();
+                }
+            } catch (e) { alert('Ошибка'); }
+            finally { tg.MainButton.hideProgress(); }
+        };
+
         async function handleSave(id) {
+            if (editingTxId) {
+                alert('Редактирование пока работает через Удаление + Новая запись (для безопасности баланса). Скоро добавлю прямой эдит!');
+                return;
+            }
             let endpoint = id === 'txSheet' ? '/addTransaction' : '/addProduct';
             let data = id === 'txSheet' ? {
                 type: document.getElementById('txType').value,
@@ -313,9 +333,7 @@
                 balance: document.getElementById('pBalance').value
             };
 
-            if (id === 'txSheet' && (!data.amount || !data.card)) return alert('Заполните сумму и карту');
-            if (id === 'prodSheet' && (!data.name || data.balance === "")) return alert('Заполните поля');
-
+            if (id === 'txSheet' && (!data.amount || !data.card)) return alert('Заполните данные');
             tg.MainButton.showProgress();
             try {
                 const res = await fetch(`${API_URL}${endpoint}`, {
@@ -331,11 +349,8 @@
                     const err = await res.json();
                     alert(err.error);
                 }
-            } catch (error) {
-                alert('Ошибка сети');
-            } finally {
-                tg.MainButton.hideProgress();
-            }
+            } catch (error) { alert('Ошибка сети'); }
+            finally { tg.MainButton.hideProgress(); }
         }
 
         init();

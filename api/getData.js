@@ -34,7 +34,7 @@ export default async function handler(req, res) {
             };
         });
 
-        const logRows = await logSheet.getRows({ limit: 50 });
+        const logRows = await logSheet.getRows({ limit: 100 });
         const transactions = logRows.map(row => {
             const data = row.toObject();
             const find = (keys) => {
@@ -43,11 +43,13 @@ export default async function handler(req, res) {
             };
 
             return {
+                id: row.rowNumber, // Сохраняем номер строки как ID
                 type: find(['тип операции', 'type']),
                 date: find(['дата операции', 'date', 'дата']),
                 amount: find(['сумма', 'amount']),
                 card: find(['карта', 'card']),
-                category: find(['категория', 'category'])
+                category: find(['категория', 'category']),
+                description: find(['описание', 'description', 'заметки'])
             };
         }).filter(t => t.type && t.amount).reverse().slice(0, 10);
 
