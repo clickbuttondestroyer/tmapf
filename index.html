@@ -8,76 +8,88 @@
     <style>
         :root {
             --bg: #f2f2f7; --text: #000; --muted: #8e8e93; --accent: #007aff;
-            --card: rgba(255,255,255,0.7); --border: rgba(0,0,0,0.05);
-            --positive: #34c759; --negative: #ff3b30;
+            --card: rgba(255,255,255,0.8); --border: rgba(0,0,0,0.08);
+            --positive: #34c759;
         }
         @media (prefers-color-scheme: dark) {
-            :root { --bg: #000; --text: #fff; --card: rgba(28,28,30,0.7); --border: rgba(255,255,255,0.1); }
+            :root { --bg: #000; --text: #fff; --card: rgba(28,28,30,0.8); --border: rgba(255,255,255,0.15); }
         }
-        body { font-family: -apple-system, system-ui; background: var(--bg); color: var(--text); margin: 0; padding: 20px; padding-bottom: 100px; transition: 0.3s; overflow-x: hidden; }
+        body { font-family: -apple-system, system-ui; background: var(--bg); color: var(--text); margin: 0; padding: 20px; padding-bottom: 120px; transition: 0.3s; overflow-x: hidden; }
         
+        /* Dashboard */
         .net-card { 
             background: linear-gradient(135deg, #1c1c1e, #444); color: #fff; 
-            padding: 30px; border-radius: 28px; text-align: center; margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 35px 20px; border-radius: 32px; text-align: center; margin-bottom: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
         }
         .net-card.positive { background: linear-gradient(135deg, #007aff, #00c6ff); }
 
-        .section-header { font-size: 20px; font-weight: 700; margin: 20px 0 10px 5px; display: flex; justify-content: space-between; align-items: center; }
-        .list { background: var(--card); backdrop-filter: blur(15px); border-radius: 20px; padding: 5px 15px; margin-bottom: 20px; }
-        .item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
+        /* Lists */
+        .section-header { font-size: 22px; font-weight: 700; margin: 25px 0 12px 5px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .list { background: var(--card); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 24px; padding: 5px 18px; margin-bottom: 20px; }
+        .item { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--border); }
         .item:last-child { border-bottom: none; }
-        .item-icon { width: 40px; height: 40px; background: var(--border); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-right: 12px; }
+        .item-icon { width: 42px; height: 42px; background: var(--border); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; margin-right: 14px; }
         .item-info { flex: 1; }
-        .item-name { font-weight: 600; display: block; }
-        .item-sub { font-size: 13px; color: var(--muted); }
-        .item-val { font-weight: 700; text-align: right; }
+        .item-name { font-weight: 600; font-size: 16px; }
+        .item-sub { font-size: 13px; color: var(--muted); display: block; }
+        .item-val { font-weight: 700; font-size: 16px; }
 
+        /* Premium Sheets */
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); opacity: 0; pointer-events: none; transition: 0.3s; z-index: 100; backdrop-filter: blur(5px); }
+        .overlay.active { opacity: 1; pointer-events: auto; }
         .sheet { 
             position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg); 
-            border-radius: 25px 25px 0 0; padding: 25px; z-index: 101;
-            transform: translateY(100%); transition: 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-            max-height: 85vh; overflow-y: auto;
+            border-radius: 35px 35px 0 0; padding: 30px 25px; z-index: 101;
+            transform: translateY(100%); transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
         }
         .sheet.active { transform: translateY(0); }
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); opacity: 0; pointer-events: none; transition: 0.3s; z-index: 100; }
-        .overlay.active { opacity: 1; pointer-events: auto; }
+        .sheet-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .close-btn { width: 32px; height: 32px; background: var(--border); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; color: var(--muted); }
 
+        /* Forms */
         input, select { 
-            width: 100%; padding: 15px; border-radius: 14px; border: 1px solid var(--border);
-            background: var(--card); color: var(--text); font-size: 16px; margin-bottom: 12px; outline: none; box-sizing: border-box; -webkit-appearance: none;
+            width: 100%; padding: 16px; border-radius: 16px; border: 1px solid var(--border);
+            background: var(--card); color: var(--text); font-size: 17px; margin-bottom: 12px; outline: none; box-sizing: border-box;
         }
-        label { font-size: 13px; color: var(--muted); margin-left: 5px; margin-bottom: 5px; display: block; }
-        .amount-big { font-size: 44px; text-align: center; font-weight: 800; border: none; background: none; margin: 10px 0; }
+        label { font-size: 13px; color: var(--muted); margin: 0 0 6px 6px; display: block; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .amount-big { font-size: 48px; text-align: center; font-weight: 800; border: none !important; background: none !important; margin: 10px 0 25px 0; color: var(--text); }
 
         .fab { 
-            position: fixed; bottom: 30px; right: 30px; width: 64px; height: 64px; 
-            background: var(--text); color: var(--bg); border-radius: 32px; 
-            border: none; font-size: 32px; box-shadow: 0 8px 24px rgba(0,0,0,0.2); z-index: 50;
-            display: flex; align-items: center; justify-content: center;
+            position: fixed; bottom: 35px; right: 25px; width: 68px; height: 68px; 
+            background: var(--text); color: var(--bg); border-radius: 34px; 
+            border: none; font-size: 36px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 50;
+            display: flex; align-items: center; justify-content: center; transition: 0.2s;
         }
-        .hidden { display: none; }
-        .loader { text-align: center; padding: 40px; color: var(--muted); font-size: 15px; }
-
-        details summary { list-style: none; cursor: pointer; }
+        .fab:active { transform: scale(0.9); }
+        
+        details summary { list-style: none; outline: none; }
         details summary::-webkit-details-marker { display: none; }
-        .arrow { transition: 0.3s; font-size: 14px; opacity: 0.5; }
-        details[open] .arrow { transform: rotate(90deg); }
+        .arrow { transition: 0.3s; font-size: 14px; color: var(--accent); }
+        details[open] summary .arrow { transform: rotate(90deg); }
+
+        .loader { text-align: center; padding: 40px; color: var(--muted); }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
     <div id="app">
         <div class="net-card" id="netCard">
-            <div style="opacity: 0.7; font-size: 13px; text-transform: uppercase; font-weight: 600;">Чистые активы</div>
-            <div style="font-size: 48px; font-weight: 800; margin: 8px 0;" id="totalNet">...</div>
+            <div style="opacity: 0.7; font-size: 14px; text-transform: uppercase; font-weight: 700; letter-spacing: 1px;">Чистые активы</div>
+            <div style="font-size: 52px; font-weight: 800; margin: 10px 0;" id="totalNet">...</div>
         </div>
 
-        <div class="section-header">
-            Активы 
-            <span id="addProd" style="color: var(--accent); font-size: 15px; font-weight: 600;">+ Добавить</span>
-        </div>
-        <div id="assetList" class="list"><div class="loader">Загрузка...</div></div>
+        <details open>
+            <summary class="section-header">
+                Активы <span style="display: flex; align-items: center; gap: 10px;">
+                    <span id="addProd" style="color: var(--accent); font-size: 14px; font-weight: 600;">+ Добавить</span>
+                    <span class="arrow">▶</span>
+                </span>
+            </summary>
+            <div id="assetList" class="list"><div class="loader">Загрузка...</div></div>
+        </details>
 
         <details>
             <summary class="section-header">
@@ -86,8 +98,12 @@
             <div id="debtList" class="list"></div>
         </details>
 
-        <div class="section-header">Последние операции</div>
-        <div id="txList" class="list"></div>
+        <details open>
+            <summary class="section-header">
+                История <span class="arrow">▶</span>
+            </summary>
+            <div id="txList" class="list"></div>
+        </details>
     </div>
 
     <button class="fab" id="mainAdd">+</button>
@@ -95,7 +111,11 @@
 
     <!-- Sheet: Transaction -->
     <div class="sheet" id="txSheet">
-        <div class="section-header" style="margin-top: 0;">Новая операция</div>
+        <div class="sheet-header">
+            <span style="font-size: 20px; font-weight: 800;">Новая операция</span>
+            <div class="close-btn" onclick="closeAll()">✕</div>
+        </div>
+        
         <input type="number" id="txAmount" class="amount-big" placeholder="0" inputmode="decimal">
         
         <label>Тип</label>
@@ -105,7 +125,7 @@
             <option value="Перевод">Перевод</option>
         </select>
         
-        <label id="lblFrom">Откуда (карта/счет)</label>
+        <label id="lblFrom">Откуда</label>
         <select id="txCard"></select>
         
         <div id="divTo" class="hidden">
@@ -119,12 +139,16 @@
         </div>
 
         <label>Описание</label>
-        <input type="text" id="txDesc" placeholder="На что потратил?">
+        <input type="text" id="txDesc" placeholder="Заметки...">
     </div>
 
     <!-- Sheet: Product -->
     <div class="sheet" id="prodSheet">
-        <div class="section-header" style="margin-top: 0;">Новый продукт</div>
+        <div class="sheet-header">
+            <span style="font-size: 20px; font-weight: 800;">Новый продукт</span>
+            <div class="close-btn" onclick="closeAll()">✕</div>
+        </div>
+        
         <label>Название</label>
         <input type="text" id="pName" placeholder="Т-Банк, Наличные...">
         
@@ -137,7 +161,7 @@
             <option value="Вклад">💰 Вклад / Счёт</option>
         </select>
         
-        <label>Текущий баланс</label>
+        <label>Баланс</label>
         <input type="number" id="pBalance" placeholder="0" inputmode="decimal">
     </div>
 
@@ -160,20 +184,20 @@
         };
 
         const cats = {
-            "Доход": ["Зарплата", "Проценты", "Инвестиции", "Кэшбэк", "Долг (вернули)", "Другое"],
-            "Расход": ["Продукты", "Электроника", "Транспорт", "Жилье", "Здоровье", "Кредиты/Долги", "Другое"]
+            "Доход": ["Зарплата", "Проценты", "Инвестиции", "Кэшбэк", "Долг (вернули) (погашение)", "Другое"],
+            "Расход": ["Продукты", "Электроника", "Транспорт", "Жилье", "Здоровье", "Кредиты/Долги (погашение)", "Другое"]
         };
 
         async function init() {
             try {
                 const res = await fetch(`${API_URL}/getData`);
-                if (!res.ok) throw new Error('Ошибка сети');
+                if (!res.ok) throw new Error('Ошибка связи');
                 const data = await res.json();
                 products = data.products || [];
                 transactions = data.transactions || [];
                 render();
             } catch (e) {
-                document.getElementById('assetList').innerHTML = `<div class="loader">Ошибка: ${e.message}</div>`;
+                document.getElementById('assetList').innerHTML = `<div class="loader">${e.message}</div>`;
             }
         }
 
@@ -185,11 +209,11 @@
             const txToCard = document.getElementById('txToCard');
             
             assetList.innerHTML = ''; debtList.innerHTML = ''; txList.innerHTML = ''; 
-            const defaultOpt = '<option value="" disabled selected>Выбрать...</option>';
+            const defaultOpt = '<option value="" disabled selected>Выбрать счет</option>';
             txCard.innerHTML = defaultOpt; txToCard.innerHTML = defaultOpt;
             
             let total = 0;
-            products.sort((a,b) => b.balance - a.balance).forEach(p => {
+            products.forEach(p => {
                 const isDebt = p.type.includes('Кредит') || p.type.includes('Долг');
                 const icon = prodIcons[Object.keys(prodIcons).find(k => p.type.includes(k))] || "💳";
                 const html = `
@@ -212,6 +236,7 @@
             transactions.forEach(t => {
                 const isPlus = t.type === 'Доход';
                 const icon = catIcons[t.category] || (isPlus ? "➕" : "➖");
+                const amount = parseFloat(t.amount.toString().replace(',', '.'));
                 txList.innerHTML += `
                     <div class="item">
                         <div class="item-icon">${icon}</div>
@@ -220,7 +245,7 @@
                             <span class="item-sub">${t.card} • ${t.date}</span>
                         </div>
                         <span class="item-val" style="color: ${isPlus ? 'var(--positive)' : 'inherit'}">
-                            ${isPlus ? '+' : ''}${parseFloat(t.amount || 0).toLocaleString()} ₽
+                            ${isPlus ? '+' : ''}${amount.toLocaleString()} ₽
                         </span>
                     </div>`;
             });
@@ -228,24 +253,21 @@
             document.getElementById('totalNet').innerText = `${total.toLocaleString()} ₽`;
             document.getElementById('netCard').className = total >= 0 ? 'net-card positive' : 'net-card';
             
-            if (products.length === 0) assetList.innerHTML = '<div class="loader">Добавьте первую карту</div>';
-            if (transactions.length === 0) txList.innerHTML = '<div class="loader">Нет операций</div>';
+            if (products.length === 0) assetList.innerHTML = '<div class="loader">Пусто</div>';
+            if (transactions.length === 0) txList.innerHTML = '<div class="loader">Операций пока нет</div>';
         }
 
-        // Логика UI
         document.getElementById('mainAdd').onclick = () => showSheet('txSheet');
-        document.getElementById('addProd').onclick = () => showSheet('prodSheet');
+        document.getElementById('addProd').onclick = (e) => { e.preventDefault(); showSheet('prodSheet'); };
         document.getElementById('overlay').onclick = closeAll;
 
         function showSheet(id) {
-            // Очистка полей перед показом
             const sheet = document.getElementById(id);
             sheet.querySelectorAll('input').forEach(i => i.value = '');
             sheet.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
             
             document.getElementById('overlay').classList.add('active');
             sheet.classList.add('active');
-            
             updateCats();
             
             tg.MainButton.offClick(handleSaveWrapper);
@@ -264,13 +286,9 @@
 
         document.getElementById('txType').onchange = (e) => {
             const type = e.target.value;
-            const isTransfer = type === 'Перевод';
-            const isIncome = type === 'Доход';
-            
-            document.getElementById('divTo').classList.toggle('hidden', !isTransfer);
-            document.getElementById('divCat').classList.toggle('hidden', isTransfer);
-            document.getElementById('lblFrom').innerText = isIncome ? 'Куда (карта/счет)' : (isTransfer ? 'Откуда' : 'Откуда (карта/счет)');
-            
+            document.getElementById('divTo').classList.toggle('hidden', type !== 'Перевод');
+            document.getElementById('divCat').classList.toggle('hidden', type === 'Перевод');
+            document.getElementById('lblFrom').innerText = type === 'Доход' ? 'Куда' : 'Откуда';
             updateCats();
         };
 
@@ -282,26 +300,21 @@
 
         async function handleSave(id) {
             let endpoint = id === 'txSheet' ? '/addTransaction' : '/addProduct';
-            let data = {};
+            let data = id === 'txSheet' ? {
+                type: document.getElementById('txType').value,
+                amount: document.getElementById('txAmount').value,
+                card: document.getElementById('txCard').value,
+                toCard: document.getElementById('txToCard').value,
+                category: document.getElementById('txCat').value,
+                description: document.getElementById('txDesc').value
+            } : {
+                name: document.getElementById('pName').value,
+                type: document.getElementById('pType').value,
+                balance: document.getElementById('pBalance').value
+            };
 
-            if (id === 'txSheet') {
-                data = {
-                    type: document.getElementById('txType').value,
-                    amount: document.getElementById('txAmount').value,
-                    card: document.getElementById('txCard').value,
-                    toCard: document.getElementById('txToCard').value,
-                    category: document.getElementById('txCat').value,
-                    description: document.getElementById('txDesc').value
-                };
-                if (!data.amount || data.card === "") return alert('Заполните сумму и выберите счет');
-            } else {
-                data = {
-                    name: document.getElementById('pName').value,
-                    type: document.getElementById('pType').value,
-                    balance: document.getElementById('pBalance').value
-                };
-                if (!data.name || data.balance === "") return alert('Заполните название и баланс');
-            }
+            if (id === 'txSheet' && (!data.amount || !data.card)) return alert('Заполните сумму и карту');
+            if (id === 'prodSheet' && (!data.name || data.balance === "")) return alert('Заполните поля');
 
             tg.MainButton.showProgress();
             try {
@@ -310,17 +323,16 @@
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify(data)
                 });
-                const result = await res.json().catch(() => ({ error: 'Ошибка сервера' }));
-
                 if (res.ok) {
                     tg.HapticFeedback.notificationOccurred('success');
                     closeAll();
                     init();
                 } else {
-                    alert('Ошибка: ' + result.error);
+                    const err = await res.json();
+                    alert(err.error);
                 }
             } catch (error) {
-                alert('Ошибка сети: ' + error.message);
+                alert('Ошибка сети');
             } finally {
                 tg.MainButton.hideProgress();
             }
