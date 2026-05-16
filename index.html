@@ -16,11 +16,9 @@
         }
         body { font-family: -apple-system, system-ui; background: var(--bg); color: var(--text); margin: 0; padding: 20px; padding-bottom: 140px; transition: 0.3s; overflow-x: hidden; }
         
-        /* Screens */
         .screen { display: none; }
         .screen.active { display: block; }
 
-        /* Dashboard */
         .net-card { 
             background: linear-gradient(135deg, #1c1c1e, #444); color: #fff; 
             padding: 35px 20px; border-radius: 32px; text-align: center; margin-bottom: 30px;
@@ -28,11 +26,9 @@
         }
         .net-card.positive { background: linear-gradient(135deg, #007aff, #00c6ff); }
 
-        /* Lists & Groups */
-        .section-header { font-size: 22px; font-weight: 700; margin: 25px 0 12px 5px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .section-header { font-size: 22px; font-weight: 700; margin: 25px 0 12px 5px; display: flex; justify-content: space-between; align-items: center; }
         .list { background: var(--card); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 24px; padding: 5px 18px; margin-bottom: 20px; }
-        .item { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--border); cursor: pointer; }
-        .item:active { background: var(--border); border-radius: 12px; }
+        .item { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--border); }
         .item:last-child { border-bottom: none; }
         .item-icon { width: 42px; height: 42px; background: var(--border); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; margin-right: 14px; }
         .item-info { flex: 1; }
@@ -42,7 +38,12 @@
 
         .date-divider { font-size: 13px; font-weight: 700; color: var(--muted); margin: 15px 0 8px 10px; text-transform: uppercase; }
 
-        /* Tab Bar */
+        /* Filter Chips */
+        .chips-container { display: flex; gap: 10px; overflow-x: auto; padding: 5px 5px 15px 5px; scrollbar-width: none; }
+        .chips-container::-webkit-scrollbar { display: none; }
+        .chip { padding: 8px 18px; background: var(--card); border-radius: 20px; font-size: 14px; font-weight: 600; border: 1px solid var(--border); white-space: nowrap; cursor: pointer; }
+        .chip.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
         .tab-bar { 
             position: fixed; bottom: 20px; left: 20px; right: 20px; 
             background: var(--tab-bg); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
@@ -54,7 +55,6 @@
         .tab-icon { font-size: 24px; margin-bottom: 2px; }
         .tab-label { font-size: 10px; font-weight: 600; }
 
-        /* Sheets */
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); opacity: 0; pointer-events: none; transition: 0.3s; z-index: 100; backdrop-filter: blur(5px); }
         .overlay.active { opacity: 1; pointer-events: auto; }
         .sheet { 
@@ -71,6 +71,7 @@
             width: 100%; padding: 16px; border-radius: 16px; border: 1px solid var(--border);
             background: var(--card); color: var(--text); font-size: 17px; margin-bottom: 12px; outline: none; box-sizing: border-box;
         }
+        label { font-size: 13px; color: var(--muted); margin: 0 0 6px 6px; display: block; font-weight: 600; text-transform: uppercase; }
         .amount-big { font-size: 48px; text-align: center; font-weight: 800; border: none !important; background: none !important; margin: 10px 0 25px 0; color: var(--text); }
         .btn-danger { width: 100%; padding: 16px; border-radius: 16px; border: none; background: var(--danger); color: #fff; font-size: 17px; font-weight: 700; margin-top: 10px; }
 
@@ -96,36 +97,30 @@
         </div>
 
         <details open>
-            <summary class="section-header">
-                Активы <span style="display: flex; align-items: center; gap: 10px;"><span id="addProd" style="color: var(--accent); font-size: 14px; font-weight: 600;">+ Добавить</span><span class="arrow">▶</span></span>
-            </summary>
+            <summary class="section-header">Активы <span style="display: flex; align-items: center; gap: 10px;"><span id="addProd" style="color: var(--accent); font-size: 14px; font-weight: 600;">+ Добавить</span><span class="arrow">▶</span></span></summary>
             <div id="assetList" class="list"></div>
         </details>
 
-        <details>
-            <summary class="section-header">Обязательства <span class="arrow">▶</span></summary>
-            <div id="debtList" class="list"></div>
-        </details>
+        <details><summary class="section-header">Обязательства <span class="arrow">▶</span></summary><div id="debtList" class="list"></div></details>
 
-        <div class="section-header">История <span id="btnAllTx" style="color: var(--accent); font-size: 14px; font-weight: 600;">Все</span></div>
+        <div class="section-header">История</div>
         <div id="txGrouped"></div>
     </div>
 
     <!-- Screen 2: Cashback -->
     <div id="screen-cashback" class="screen">
         <div class="section-header">Хаб кэшбэка <span id="addCashback" style="color: var(--accent); font-size: 14px;">+ Добавить</span></div>
+        <div class="chips-container" id="cashbackChips"></div>
         <div id="cashbackList"></div>
     </div>
 
     <!-- Tab Bar -->
     <div class="tab-bar">
         <div class="tab-item active" onclick="switchScreen('main')">
-            <div class="tab-icon">🏠</div>
-            <div class="tab-label">ГЛАВНАЯ</div>
+            <div class="tab-icon">🏠</div><div class="tab-label">ГЛАВНАЯ</div>
         </div>
         <div class="tab-item" onclick="switchScreen('cashback')">
-            <div class="tab-icon">💎</div>
-            <div class="tab-label">КЭШБЭК</div>
+            <div class="tab-icon">💎</div><div class="tab-label">КЭШБЭК</div>
         </div>
     </div>
 
@@ -141,8 +136,7 @@
             <option value="Доход">Доход</option>
             <option value="Перевод">Перевод</option>
         </select>
-        <label id="lblFrom">Откуда</label>
-        <select id="txCard"></select>
+        <label id="lblFrom">Откуда</label><select id="txCard"></select>
         <div id="divTo" class="hidden"><label>Куда</label><select id="txToCard"></select></div>
         <div id="divCat"><label>Категория</label><select id="txCat"></select></div>
         <input type="text" id="txDesc" placeholder="Описание...">
@@ -152,12 +146,15 @@
     <!-- Sheet: Cashback Add -->
     <div class="sheet" id="cashSheet">
         <div class="sheet-header"><span style="font-size: 20px; font-weight: 800;">Добавить кэшбэк</span><div class="close-btn" onclick="closeAll()">✕</div></div>
-        <label>Карта</label>
-        <select id="cashCard"></select>
+        <label>Источник (Карта или свое)</label>
+        <input type="text" id="cashSource" list="sourceList" placeholder="Т-Банк, Яндекс Пэй...">
+        <datalist id="sourceList"></datalist>
         <label>Категория</label>
-        <input type="text" id="cashCat" placeholder="Напр. Супермаркеты">
+        <input type="text" id="cashCat" placeholder="Супермаркеты, Такси...">
         <label>Процент (%)</label>
         <input type="number" id="cashPercent" placeholder="5" inputmode="numeric">
+        <label>Период (Месяц)</label>
+        <select id="cashPeriod"></select>
     </div>
 
     <!-- Sheet: Product -->
@@ -178,11 +175,32 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
         const API_URL = window.location.origin + '/api';
-        let products = [], transactions = [], editingTxId = null;
+        
+        let products = [], transactions = [], cashbackData = [], editingTxId = null, currentCashFilter = 'Все';
 
-        const catIcons = { "Продукты": "🛒", "Электроника": "💻", "Транспорт": "🚗", "Жилье": "🏠", "Здоровье": "💊", "Кредиты/Долги (погашение)": "🏦", "Зарплата": "💰", "Инвестиции": "📊", "Кэшбэк": "💸", "Другое": "📦" };
+        const smartIcons = {
+            "🛒": ["супермаркет", "продукт", "еда", "пятерочка", "магнит", "перекресток", "ашан", "дикси", "лента"],
+            "🚕": ["такси", "яндекс", "uber", "драйв", "drive", "машина"],
+            "💊": ["аптек", "здоров", "медицин", "клиник", "врач"],
+            "🍔": ["ресторан", "кафе", "еда", "бургер", "пицца", "суши", "макдоналдс", "вкусно", "кфс", "kfc"],
+            "🎬": ["кино", "театр", "развлеч", "билет", "отдых", "парк"],
+            "🛍️": ["одежд", "обувь", "шопинг", "wildberries", "ozon", "озон", "вб"],
+            "🚗": ["авто", "бензин", "азс", "запчаст", "сервис"],
+            "🏠": ["жилье", "аренд", "дом", "ремонт", "мебель", "коммунал", "жкх"],
+            "📱": ["связь", "интернет", "телефон", "подписк"],
+            "🎓": ["образован", "курс", "обучен", "школа", "книг"]
+        };
+
         const prodIcons = { "Дебетовая": "💳", "Наличные": "💵", "Кредит": "🏦", "Инвестиции": "📈", "Вклад": "💰" };
         const cats = { "Доход": ["Зарплата", "Проценты", "Инвестиции", "Кэшбэк", "Долг (вернули)", "Другое"], "Расход": ["Продукты", "Электроника", "Транспорт", "Жилье", "Здоровье", "Кредиты/Долги (погашение)", "Другое"] };
+
+        function getSmartIcon(text) {
+            text = text.toLowerCase();
+            for (const [icon, keywords] of Object.entries(smartIcons)) {
+                if (keywords.some(k => text.includes(k))) return icon;
+            }
+            return "🏷️";
+        }
 
         async function init() {
             try {
@@ -191,8 +209,22 @@
                 const cData = await cRes.json();
                 products = data.products || [];
                 transactions = data.transactions || [];
-                render(cData.categories || []);
+                cashbackData = cData.categories || [];
+                render();
+                setupPeriodSelect();
             } catch (e) { console.error(e); }
+        }
+
+        function setupPeriodSelect() {
+            const select = document.getElementById('cashPeriod');
+            select.innerHTML = '';
+            const now = new Date();
+            for (let i = 0; i < 3; i++) {
+                const d = new Date(now.getFullYear(), now.getMonth() + i, 1);
+                const val = `${(d.getMonth() + 1).toString().padStart(2, '0')}-${d.getFullYear()}`;
+                const label = d.toLocaleString('ru-RU', { month: 'long', year: 'numeric' });
+                select.innerHTML += `<option value="${val}">${label}</option>`;
+            }
         }
 
         function switchScreen(name) {
@@ -201,15 +233,15 @@
             document.querySelector(`.tab-item[onclick*="${name}"]`).classList.add('active');
         }
 
-        function render(cashback = []) {
+        function render() {
             const assetList = document.getElementById('assetList');
             const debtList = document.getElementById('debtList');
             const txGrouped = document.getElementById('txGrouped');
-            const txCard = document.getElementById('txCard'), txToCard = document.getElementById('txToCard'), cashCard = document.getElementById('cashCard');
+            const sourceList = document.getElementById('sourceList');
             
-            assetList.innerHTML = ''; debtList.innerHTML = ''; txGrouped.innerHTML = '';
-            txCard.innerHTML = txToCard.innerHTML = cashCard.innerHTML = '<option value="" disabled selected>Выбрать счет</option>';
+            assetList.innerHTML = ''; debtList.innerHTML = ''; txGrouped.innerHTML = ''; sourceList.innerHTML = '';
             
+            // Продукты
             let total = 0;
             products.forEach(p => {
                 const isDebt = p.type.includes('Кредит') || p.type.includes('Долг');
@@ -217,17 +249,12 @@
                 const html = `<div class="item"><div class="item-icon">${icon}</div><div class="item-info"><span class="item-name">${p.name}</span><span class="item-sub">${p.type}</span></div><span class="item-val">${p.balance.toLocaleString()} ₽</span></div>`;
                 if (isDebt) { debtList.innerHTML += html; total -= p.balance; }
                 else { assetList.innerHTML += html; total += p.balance; }
-                const opt = `<option value="${p.name}">${p.name}</option>`;
-                txCard.innerHTML += opt; txToCard.innerHTML += opt; cashCard.innerHTML += opt;
+                sourceList.innerHTML += `<option value="${p.name}">`;
             });
 
-            // Группировка транзакций по датам
+            // История
             const groups = {};
-            transactions.forEach(t => {
-                if (!groups[t.date]) groups[t.date] = [];
-                groups[t.date].push(t);
-            });
-
+            transactions.forEach(t => { if (!groups[t.date]) groups[t.date] = []; groups[t.date].push(t); });
             Object.entries(groups).forEach(([date, txs]) => {
                 const div = document.createElement('div');
                 div.innerHTML = `<div class="date-divider">${date}</div>`;
@@ -235,33 +262,32 @@
                 list.className = 'list';
                 txs.forEach(t => {
                     const isPlus = t.type === 'Доход';
-                    const icon = catIcons[t.category] || (isPlus ? "➕" : "➖");
-                    const item = document.createElement('div');
-                    item.className = 'item';
-                    item.innerHTML = `<div class="item-icon">${icon}</div><div class="item-info"><span class="item-name">${t.category || t.type}</span><span class="item-sub">${t.card}</span></div><span class="item-val" style="color: ${isPlus ? 'var(--positive)' : 'inherit'}">${isPlus ? '+' : ''}${parseFloat(t.amount).toLocaleString()} ₽</span>`;
-                    item.onclick = () => openEditTx(t);
-                    list.appendChild(item);
+                    const icon = getSmartIcon(t.category || t.type);
+                    list.innerHTML += `<div class="item" onclick='openEditTx(${JSON.stringify(t)})'><div class="item-icon">${icon}</div><div class="item-info"><span class="item-name">${t.category || t.type}</span><span class="item-sub">${t.card}</span></div><span class="item-val" style="color: ${isPlus ? 'var(--positive)' : 'inherit'}">${isPlus ? '+' : ''}${parseFloat(t.amount).toLocaleString()} ₽</span></div>`;
                 });
                 div.appendChild(list);
                 txGrouped.appendChild(div);
             });
 
-            // Рендер кэшбэка
+            // Кэшбэк чипсы
+            const chips = document.getElementById('cashbackChips');
+            const sources = ['Все', ...new Set(cashbackData.map(c => c.source))];
+            chips.innerHTML = sources.map(s => `<div class="chip ${currentCashFilter === s ? 'active' : ''}" onclick="filterCash('${s}')">${s}</div>`).join('');
+
+            // Кэшбэк список
             const cbList = document.getElementById('cashbackList');
             cbList.innerHTML = '';
-            if (cashback.length === 0) cbList.innerHTML = '<div class="loader">Категории не занесены</div>';
+            const filtered = currentCashFilter === 'Все' ? cashbackData : cashbackData.filter(c => c.source === currentCashFilter);
+            
             const cbGrouped = {};
-            cashback.forEach(c => {
-                if (!cbGrouped[c.card]) cbGrouped[c.card] = [];
-                cbGrouped[c.card].push(c);
-            });
-            Object.entries(cbGrouped).forEach(([card, cats]) => {
+            filtered.forEach(c => { if (!cbGrouped[c.source]) cbGrouped[c.source] = []; cbGrouped[c.source].push(c); });
+            Object.entries(cbGrouped).forEach(([source, cats]) => {
                 const div = document.createElement('div');
-                div.innerHTML = `<div class="section-header">${card}</div>`;
+                div.innerHTML = `<div class="section-header">${source}</div>`;
                 const list = document.createElement('div');
                 list.className = 'list';
                 cats.forEach(c => {
-                    list.innerHTML += `<div class="item"><div class="item-info"><span class="item-name">${c.category}</span></div><span class="item-val" style="color: var(--accent)">${c.percent}%</span></div>`;
+                    list.innerHTML += `<div class="item"><div class="item-icon">${getSmartIcon(c.category)}</div><div class="item-info"><span class="item-name">${c.category}</span></div><span class="item-val" style="color: var(--accent)">${c.percent}%</span></div>`;
                 });
                 div.appendChild(list);
                 cbList.appendChild(div);
@@ -271,13 +297,13 @@
             document.getElementById('netCard').className = total >= 0 ? 'net-card positive' : 'net-card';
         }
 
+        function filterCash(s) { currentCashFilter = s; render(); }
+
         function showSheet(id, isEdit = false) {
             const sheet = document.getElementById(id);
             if (!isEdit) { sheet.querySelectorAll('input').forEach(i => i.value = ''); sheet.querySelectorAll('select').forEach(s => s.selectedIndex = 0); }
             document.getElementById('overlay').classList.add('active');
             sheet.classList.add('active');
-            if (id === 'txSheet') updateCats();
-            tg.MainButton.offClick(handleSaveWrapper);
             tg.MainButton.setText('СОХРАНИТЬ').show();
             tg.MainButton.onClick(handleSaveWrapper);
             currentSheetId = id;
@@ -287,47 +313,23 @@
         const handleSaveWrapper = () => handleSave(currentSheetId);
         function closeAll() { document.querySelectorAll('.sheet, .overlay').forEach(el => el.classList.remove('active')); tg.MainButton.hide(); }
 
-        document.getElementById('mainAdd').onclick = () => { editingTxId = null; document.getElementById('txSheetTitle').innerText = 'Новая операция'; document.getElementById('btnDeleteTx').classList.add('hidden'); showSheet('txSheet'); };
+        document.getElementById('mainAdd').onclick = () => showSheet('txSheet');
         document.getElementById('addProd').onclick = (e) => { e.preventDefault(); showSheet('prodSheet'); };
         document.getElementById('addCashback').onclick = () => showSheet('cashSheet');
 
         async function handleSave(id) {
             let endpoint = id === 'txSheet' ? '/addTransaction' : (id === 'prodSheet' ? '/addProduct' : '/addCashback');
             let data = {};
-            if (id === 'txSheet') data = { type: document.getElementById('txType').value, amount: document.getElementById('txAmount').value, card: document.getElementById('txCard').value, toCard: document.getElementById('txToCard').value, category: document.getElementById('txCat').value, description: document.getElementById('txDesc').value };
+            if (id === 'txSheet') data = { type: document.getElementById('txType').value, amount: document.getElementById('txAmount').value, card: document.getElementById('txCard').value, category: document.getElementById('txCat').value };
             else if (id === 'prodSheet') data = { name: document.getElementById('pName').value, type: document.getElementById('pType').value, balance: document.getElementById('pBalance').value };
-            else data = { card: document.getElementById('cashCard').value, category: document.getElementById('cashCat').value, percent: document.getElementById('cashPercent').value };
+            else data = { source: document.getElementById('cashSource').value, category: document.getElementById('cashCat').value, percent: document.getElementById('cashPercent').value, period: document.getElementById('cashPeriod').value };
 
             tg.MainButton.showProgress();
             try {
                 const res = await fetch(`${API_URL}${endpoint}`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) });
                 if (res.ok) { tg.HapticFeedback.notificationOccurred('success'); closeAll(); init(); }
-            } catch (e) { alert('Ошибка сети'); }
+            } catch (e) { alert('Ошибка'); }
             finally { tg.MainButton.hideProgress(); }
-        }
-
-        function updateCats() {
-            const type = document.getElementById('txType').value;
-            document.getElementById('txCat').innerHTML = (cats[type] || []).map(c => `<option value="${c}">${c}</option>`).join('');
-        }
-        document.getElementById('txType').onchange = () => {
-            const type = document.getElementById('txType').value;
-            document.getElementById('divTo').classList.toggle('hidden', type !== 'Перевод');
-            document.getElementById('divCat').classList.toggle('hidden', type === 'Перевод');
-            document.getElementById('lblFrom').innerText = type === 'Доход' ? 'Куда' : 'Откуда';
-            updateCats();
-        };
-
-        function openEditTx(t) {
-            editingTxId = t.id;
-            document.getElementById('txSheetTitle').innerText = 'Редактировать';
-            document.getElementById('txAmount').value = t.amount;
-            document.getElementById('txType').value = t.type;
-            document.getElementById('txCard').value = t.card;
-            document.getElementById('txDesc').value = t.description || '';
-            document.getElementById('btnDeleteTx').classList.remove('hidden');
-            showSheet('txSheet', true);
-            setTimeout(() => document.getElementById('txCat').value = t.category, 50);
         }
 
         init();

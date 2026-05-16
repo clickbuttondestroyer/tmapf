@@ -8,7 +8,7 @@ export default async function handler(req, res) {
     if (req.method === 'OPTIONS') return res.status(200).end();
 
     try {
-        const { card, category, percent } = req.body;
+        const { source, category, value, period } = req.body;
         const auth = new JWT({
             email: process.env.GOOGLE_CLIENT_EMAIL,
             key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
@@ -20,11 +20,10 @@ export default async function handler(req, res) {
 
         let sheet = doc.sheetsByTitle['Cashback'];
         if (!sheet) {
-            // Если листа нет, создаем его с заголовками
-            sheet = await doc.addSheet({ title: 'Cashback', headerValues: ['Карта', 'Категория', 'Процент'] });
+            sheet = await doc.addSheet({ title: 'Cashback', headerValues: ['Period', 'Source', 'Category', 'Value'] });
         }
 
-        await sheet.addRow([card, category, percent]);
+        await sheet.addRow([period, source, category, value]);
         return res.status(200).json({ success: true });
     } catch (error) {
         return res.status(500).json({ error: error.message });

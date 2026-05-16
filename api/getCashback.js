@@ -21,12 +21,17 @@ export default async function handler(req, res) {
         if (!sheet) return res.status(200).json({ categories: [] });
 
         const rows = await sheet.getRows();
+        
+        // Получаем текущий месяц в формате ММ-ГГГГ
+        const now = new Date();
+        const currentPeriod = `${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getFullYear()}`;
+
         const categories = rows.map(r => ({
-            id: r.rowNumber,
-            card: r.get('Карта') || r.get('Card') || '',
-            category: r.get('Категория') || r.get('Category') || '',
-            percent: r.get('Процент') || r.get('Percent') || '0'
-        }));
+            period: r.get('Period') || '',
+            source: r.get('Source') || '',
+            category: r.get('Category') || '',
+            percent: r.get('Value') || '0'
+        })).filter(c => c.period === currentPeriod); // Показываем только актуальные
 
         return res.status(200).json({ categories });
     } catch (error) {
