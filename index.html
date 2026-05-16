@@ -128,8 +128,8 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
         
-        // Авто-определение URL: если локально - используем localhost, если на Vercel - текущий домен
-        const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:3000/api' : '/api';
+        // Авто-определение URL
+        const API_URL = window.location.origin + '/api';
         
         let products = [];
         let transactions = [];
@@ -142,13 +142,14 @@
         async function init() {
             try {
                 const res = await fetch(`${API_URL}/getData`);
+                if (!res.ok) throw new Error('Ошибка сервера');
                 const data = await res.json();
                 products = data.products || [];
                 transactions = data.transactions || [];
                 render();
             } catch (e) {
                 console.error(e);
-                document.getElementById('assetList').innerHTML = '<div class="loader">Ошибка загрузки</div>';
+                document.getElementById('assetList').innerHTML = `<div class="loader">Ошибка загрузки: ${e.message}</div>`;
             }
         }
 
@@ -223,12 +224,10 @@
             
             updateCats();
             
-            // Очищаем старые обработчики и ставим новый
             tg.MainButton.offClick(handleSaveWrapper);
             tg.MainButton.setText('СОХРАНИТЬ').show();
             tg.MainButton.onClick(handleSaveWrapper);
             
-            // Сохраняем текущий ID шторки для обработчика
             currentSheetId = id;
         }
 
@@ -254,7 +253,6 @@
         }
 
         async function handleSave(id) {
-            tg.MainButton.showProgress();
             let endpoint = id === 'txSheet' ? '/addTransaction' : '/addProduct';
             let data = {};
 
@@ -277,6 +275,8 @@
                 if (!data.name || data.balance === "") return alert('Заполните название и баланс');
             }
 
+            tg.MainButton.showProgress();
+
             try {
                 const res = await fetch(`${API_URL}${endpoint}`, {
                     method: 'POST',
@@ -284,13 +284,14 @@
                     body: JSON.stringify(data)
                 });
 
+                const result = await res.json().catch(() => ({ error: 'Некорректный ответ сервера' }));
+
                 if (res.ok) {
                     tg.HapticFeedback.notificationOccurred('success');
                     closeAll();
-                    init(); // Обновляем данные без перезагрузки страницы
+                    init();
                 } else {
-                    const err = await res.json();
-                    alert('Ошибка: ' + (err.error || 'Неизвестная ошибка'));
+                    alert('Ошибка: ' + (result.error || 'Неизвестная ошибка'));
                 }
             } catch (error) {
                 alert('Ошибка сети: ' + error.message);
