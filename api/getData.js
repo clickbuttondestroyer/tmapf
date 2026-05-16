@@ -23,19 +23,24 @@ export default async function handler(req, res) {
 
         const prodRows = await prodSheet.getRows();
         const products = prodRows.map(row => ({
-            name: row.get('Name'),
-            type: row.get('Type'),
-            balance: parseFloat(row.get('Balance')) || 0
+            name: row.get('Name') || row.get('Название') || '',
+            type: row.get('Type') || row.get('Тип') || '',
+            balance: parseFloat(row.get('Balance') || row.get('Баланс') || 0)
         }));
 
-        const logRows = await logSheet.getRows({ limit: 10, offset: 0 }); // Последние 10 операций
-        const transactions = logRows.map(row => ({
-            type: row.get('Type'),
-            date: row.get('Date'),
-            amount: row.get('Amount'),
-            card: row.get('Card'),
-            category: row.get('Category')
-        })).reverse();
+        // Получаем последние операции (берем чуть больше, чтобы отфильтровать пустые если есть)
+        const logRows = await logSheet.getRows({ limit: 50 }); 
+        
+        const transactions = logRows.map(row => {
+            // Маппинг с учетом возможных русских названий колонок из твоего описания
+            const type = row.get('Тип операции') || row.get('Type') || '';
+            const date = row.get('Дата операции') || row.get('Date') || '';
+            const amount = row.get('Сумма') || row.get('Amount') || 0;
+            const card = row.get('Карта') || row.get('Card') || '';
+            const category = row.get('Категория') || row.get('Category') || '';
+            
+            return { type, date, amount, card, category };
+        }).filter(t => t.type).reverse().slice(0, 10); // Оставляем только 10 последних
 
         return res.status(200).json({ products, transactions });
     } catch (error) {

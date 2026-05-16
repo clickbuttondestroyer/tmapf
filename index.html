@@ -9,13 +9,13 @@
         :root {
             --bg: #f2f2f7; --text: #000; --muted: #8e8e93; --accent: #007aff;
             --card: rgba(255,255,255,0.7); --border: rgba(0,0,0,0.05);
+            --positive: #34c759; --negative: #ff3b30;
         }
         @media (prefers-color-scheme: dark) {
             :root { --bg: #000; --text: #fff; --card: rgba(28,28,30,0.7); --border: rgba(255,255,255,0.1); }
         }
         body { font-family: -apple-system, system-ui; background: var(--bg); color: var(--text); margin: 0; padding: 20px; padding-bottom: 100px; transition: 0.3s; overflow-x: hidden; }
         
-        /* Dashboard */
         .net-card { 
             background: linear-gradient(135deg, #1c1c1e, #444); color: #fff; 
             padding: 30px; border-radius: 28px; text-align: center; margin-bottom: 30px;
@@ -23,60 +23,59 @@
         }
         .net-card.positive { background: linear-gradient(135deg, #007aff, #00c6ff); }
 
-        /* Lists */
         .section-header { font-size: 20px; font-weight: 700; margin: 20px 0 10px 5px; display: flex; justify-content: space-between; align-items: center; }
         .list { background: var(--card); backdrop-filter: blur(15px); border-radius: 20px; padding: 5px 15px; margin-bottom: 20px; }
-        .item { display: flex; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid var(--border); }
+        .item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
         .item:last-child { border-bottom: none; }
-        .item-name { font-weight: 500; }
-        .item-val { font-weight: 600; }
-        .item-sub { font-size: 12px; color: var(--muted); display: block; }
+        .item-icon { width: 40px; height: 40px; background: var(--border); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-right: 12px; }
+        .item-info { flex: 1; }
+        .item-name { font-weight: 600; display: block; }
+        .item-sub { font-size: 13px; color: var(--muted); }
+        .item-val { font-weight: 700; text-align: right; }
 
-        /* Sheets */
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); opacity: 0; pointer-events: none; transition: 0.3s; z-index: 100; }
-        .overlay.active { opacity: 1; pointer-events: auto; }
         .sheet { 
             position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg); 
             border-radius: 25px 25px 0 0; padding: 25px; z-index: 101;
             transform: translateY(100%); transition: 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-            max-height: 80vh; overflow-y: auto;
+            max-height: 85vh; overflow-y: auto;
         }
         .sheet.active { transform: translateY(0); }
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); opacity: 0; pointer-events: none; transition: 0.3s; z-index: 100; }
+        .overlay.active { opacity: 1; pointer-events: auto; }
 
-        /* Inputs */
         input, select { 
-            width: 100%; padding: 15px; border-radius: 12px; border: 1px solid var(--border);
-            background: var(--card); color: var(--text); font-size: 16px; margin-bottom: 10px; outline: none; box-sizing: border-box;
+            width: 100%; padding: 15px; border-radius: 14px; border: 1px solid var(--border);
+            background: var(--card); color: var(--text); font-size: 16px; margin-bottom: 12px; outline: none; box-sizing: border-box; -webkit-appearance: none;
         }
-        .amount-big { font-size: 40px; text-align: center; font-weight: 700; border: none; background: none; margin: 20px 0; }
+        label { font-size: 13px; color: var(--muted); margin-left: 5px; margin-bottom: 5px; display: block; }
+        .amount-big { font-size: 44px; text-align: center; font-weight: 800; border: none; background: none; margin: 10px 0; }
 
         .fab { 
-            position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; 
-            background: var(--text); color: var(--bg); border-radius: 30px; 
-            border: none; font-size: 30px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); z-index: 50;
+            position: fixed; bottom: 30px; right: 30px; width: 64px; height: 64px; 
+            background: var(--text); color: var(--bg); border-radius: 32px; 
+            border: none; font-size: 32px; box-shadow: 0 8px 24px rgba(0,0,0,0.2); z-index: 50;
             display: flex; align-items: center; justify-content: center;
         }
         .hidden { display: none; }
-        
+        .loader { text-align: center; padding: 40px; color: var(--muted); font-size: 15px; }
+
         details summary { list-style: none; cursor: pointer; }
         details summary::-webkit-details-marker { display: none; }
-        .arrow { transition: 0.3s; font-size: 14px; }
+        .arrow { transition: 0.3s; font-size: 14px; opacity: 0.5; }
         details[open] .arrow { transform: rotate(90deg); }
-
-        .loader { text-align: center; padding: 50px; color: var(--muted); }
     </style>
 </head>
 <body>
 
     <div id="app">
         <div class="net-card" id="netCard">
-            <div style="opacity: 0.7; font-size: 13px; text-transform: uppercase;">Чистые активы</div>
-            <div style="font-size: 42px; font-weight: 800; margin: 5px 0;" id="totalNet">...</div>
+            <div style="opacity: 0.7; font-size: 13px; text-transform: uppercase; font-weight: 600;">Чистые активы</div>
+            <div style="font-size: 48px; font-weight: 800; margin: 8px 0;" id="totalNet">...</div>
         </div>
 
         <div class="section-header">
             Активы 
-            <span id="addProd" style="color: var(--accent); font-size: 14px; font-weight: 500;">+ Добавить</span>
+            <span id="addProd" style="color: var(--accent); font-size: 15px; font-weight: 600;">+ Добавить</span>
         </div>
         <div id="assetList" class="list"><div class="loader">Загрузка...</div></div>
 
@@ -92,47 +91,73 @@
     </div>
 
     <button class="fab" id="mainAdd">+</button>
-
     <div class="overlay" id="overlay"></div>
 
     <!-- Sheet: Transaction -->
     <div class="sheet" id="txSheet">
+        <div class="section-header" style="margin-top: 0;">Новая операция</div>
+        <input type="number" id="txAmount" class="amount-big" placeholder="0" inputmode="decimal">
+        
+        <label>Тип</label>
         <select id="txType">
             <option value="Расход">Расход</option>
             <option value="Доход">Доход</option>
             <option value="Перевод">Перевод</option>
         </select>
-        <input type="number" id="txAmount" class="amount-big" placeholder="0" inputmode="decimal">
         
+        <label id="lblFrom">Откуда (карта/счет)</label>
         <select id="txCard"></select>
-        <select id="txToCard" class="hidden"></select>
-        <select id="txCat"></select>
-        <input type="text" id="txDesc" placeholder="Описание (или выбор долга)">
+        
+        <div id="divTo" class="hidden">
+            <label>Куда</label>
+            <select id="txToCard"></select>
+        </div>
+        
+        <div id="divCat">
+            <label>Категория</label>
+            <select id="txCat"></select>
+        </div>
+
+        <label>Описание</label>
+        <input type="text" id="txDesc" placeholder="На что потратил?">
     </div>
 
     <!-- Sheet: Product -->
     <div class="sheet" id="prodSheet">
-        <div class="section-header">Новый продукт</div>
-        <input type="text" id="pName" placeholder="Название (Т-Банк, Долг Игорю...)">
+        <div class="section-header" style="margin-top: 0;">Новый продукт</div>
+        <label>Название</label>
+        <input type="text" id="pName" placeholder="Т-Банк, Наличные...">
+        
+        <label>Вид</label>
         <select id="pType">
-            <option value="Дебетовая">Дебетовая карта</option>
-            <option value="Наличные">Наличные</option>
-            <option value="Кредит">Кредит/Долг (Обязательство)</option>
-            <option value="Инвестиции">Инвестиции</option>
-            <option value="Вклад">Вклад/Накопительный счет</option>
+            <option value="Дебетовая">💳 Дебетовая карта</option>
+            <option value="Наличные">💵 Наличные</option>
+            <option value="Кредит">🏦 Кредит / Долг</option>
+            <option value="Инвестиции">📈 Инвестиции</option>
+            <option value="Вклад">💰 Вклад / Счёт</option>
         </select>
-        <input type="number" id="pBalance" placeholder="Начальный баланс" inputmode="decimal">
+        
+        <label>Текущий баланс</label>
+        <input type="number" id="pBalance" placeholder="0" inputmode="decimal">
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
         
-        // Авто-определение URL
         const API_URL = window.location.origin + '/api';
-        
         let products = [];
         let transactions = [];
+
+        const catIcons = {
+            "Продукты": "🛒", "Электроника": "💻", "Транспорт": "🚗", "Жилье": "🏠", 
+            "Здоровье": "💊", "Кредиты/Долги": "🏦", "Зарплата": "💰", "Проценты": "📈", 
+            "Инвестиции": "📊", "Кэшбэк": "💸", "Долг (вернули)": "🤝", "Другое": "📦"
+        };
+
+        const prodIcons = {
+            "Дебетовая": "💳", "Наличные": "💵", "Кредит": "🏦", "Инвестиции": "📈", "Вклад": "💰"
+        };
 
         const cats = {
             "Доход": ["Зарплата", "Проценты", "Инвестиции", "Кэшбэк", "Долг (вернули)", "Другое"],
@@ -142,14 +167,13 @@
         async function init() {
             try {
                 const res = await fetch(`${API_URL}/getData`);
-                if (!res.ok) throw new Error('Ошибка сервера');
+                if (!res.ok) throw new Error('Ошибка сети');
                 const data = await res.json();
                 products = data.products || [];
                 transactions = data.transactions || [];
                 render();
             } catch (e) {
-                console.error(e);
-                document.getElementById('assetList').innerHTML = `<div class="loader">Ошибка загрузки: ${e.message}</div>`;
+                document.getElementById('assetList').innerHTML = `<div class="loader">Ошибка: ${e.message}</div>`;
             }
         }
 
@@ -161,47 +185,42 @@
             const txToCard = document.getElementById('txToCard');
             
             assetList.innerHTML = ''; debtList.innerHTML = ''; txList.innerHTML = ''; 
-            txCard.innerHTML = '<option value="" disabled selected>Откуда</option>'; 
-            txToCard.innerHTML = '<option value="" disabled selected>Куда</option>';
+            const defaultOpt = '<option value="" disabled selected>Выбрать...</option>';
+            txCard.innerHTML = defaultOpt; txToCard.innerHTML = defaultOpt;
             
             let total = 0;
-            
-            // Сортировка и рендер продуктов
             products.sort((a,b) => b.balance - a.balance).forEach(p => {
-                const isDebt = p.type === 'Кредит' || p.type === 'Долг';
+                const isDebt = p.type.includes('Кредит') || p.type.includes('Долг');
+                const icon = prodIcons[Object.keys(prodIcons).find(k => p.type.includes(k))] || "💳";
                 const html = `
                     <div class="item">
-                        <div>
+                        <div class="item-icon">${icon}</div>
+                        <div class="item-info">
                             <span class="item-name">${p.name}</span>
                             <span class="item-sub">${p.type}</span>
                         </div>
                         <span class="item-val">${p.balance.toLocaleString()} ₽</span>
                     </div>`;
                 
-                if (isDebt) { 
-                    debtList.innerHTML += html; 
-                    total -= p.balance; 
-                } else { 
-                    assetList.innerHTML += html; 
-                    total += p.balance; 
-                }
+                if (isDebt) { debtList.innerHTML += html; total -= p.balance; }
+                else { assetList.innerHTML += html; total += p.balance; }
 
                 const opt = `<option value="${p.name}">${p.name}</option>`;
-                txCard.innerHTML += opt;
-                txToCard.innerHTML += opt;
+                txCard.innerHTML += opt; txToCard.innerHTML += opt;
             });
 
-            // Рендер последних операций
             transactions.forEach(t => {
                 const isPlus = t.type === 'Доход';
+                const icon = catIcons[t.category] || (isPlus ? "➕" : "➖");
                 txList.innerHTML += `
                     <div class="item">
-                        <div>
+                        <div class="item-icon">${icon}</div>
+                        <div class="item-info">
                             <span class="item-name">${t.category || t.type}</span>
                             <span class="item-sub">${t.card} • ${t.date}</span>
                         </div>
-                        <span class="item-val" style="color: ${isPlus ? '#34c759' : 'inherit'}">
-                            ${isPlus ? '+' : ''}${parseFloat(t.amount).toLocaleString()} ₽
+                        <span class="item-val" style="color: ${isPlus ? 'var(--positive)' : 'inherit'}">
+                            ${isPlus ? '+' : ''}${parseFloat(t.amount || 0).toLocaleString()} ₽
                         </span>
                     </div>`;
             });
@@ -209,7 +228,7 @@
             document.getElementById('totalNet').innerText = `${total.toLocaleString()} ₽`;
             document.getElementById('netCard').className = total >= 0 ? 'net-card positive' : 'net-card';
             
-            if (products.length === 0) assetList.innerHTML = '<div class="loader">Нет данных. Добавьте карту!</div>';
+            if (products.length === 0) assetList.innerHTML = '<div class="loader">Добавьте первую карту</div>';
             if (transactions.length === 0) txList.innerHTML = '<div class="loader">Нет операций</div>';
         }
 
@@ -219,15 +238,19 @@
         document.getElementById('overlay').onclick = closeAll;
 
         function showSheet(id) {
+            // Очистка полей перед показом
+            const sheet = document.getElementById(id);
+            sheet.querySelectorAll('input').forEach(i => i.value = '');
+            sheet.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
+            
             document.getElementById('overlay').classList.add('active');
-            document.getElementById(id).classList.add('active');
+            sheet.classList.add('active');
             
             updateCats();
             
             tg.MainButton.offClick(handleSaveWrapper);
             tg.MainButton.setText('СОХРАНИТЬ').show();
             tg.MainButton.onClick(handleSaveWrapper);
-            
             currentSheetId = id;
         }
 
@@ -240,9 +263,14 @@
         }
 
         document.getElementById('txType').onchange = (e) => {
-            const isTransfer = e.target.value === 'Перевод';
-            document.getElementById('txToCard').classList.toggle('hidden', !isTransfer);
-            document.getElementById('txCat').classList.toggle('hidden', isTransfer);
+            const type = e.target.value;
+            const isTransfer = type === 'Перевод';
+            const isIncome = type === 'Доход';
+            
+            document.getElementById('divTo').classList.toggle('hidden', !isTransfer);
+            document.getElementById('divCat').classList.toggle('hidden', isTransfer);
+            document.getElementById('lblFrom').innerText = isIncome ? 'Куда (карта/счет)' : (isTransfer ? 'Откуда' : 'Откуда (карта/счет)');
+            
             updateCats();
         };
 
@@ -265,7 +293,7 @@
                     category: document.getElementById('txCat').value,
                     description: document.getElementById('txDesc').value
                 };
-                if (!data.amount || !data.card) return alert('Заполните сумму и карту');
+                if (!data.amount || data.card === "") return alert('Заполните сумму и выберите счет');
             } else {
                 data = {
                     name: document.getElementById('pName').value,
@@ -276,22 +304,20 @@
             }
 
             tg.MainButton.showProgress();
-
             try {
                 const res = await fetch(`${API_URL}${endpoint}`, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify(data)
                 });
-
-                const result = await res.json().catch(() => ({ error: 'Некорректный ответ сервера' }));
+                const result = await res.json().catch(() => ({ error: 'Ошибка сервера' }));
 
                 if (res.ok) {
                     tg.HapticFeedback.notificationOccurred('success');
                     closeAll();
                     init();
                 } else {
-                    alert('Ошибка: ' + (result.error || 'Неизвестная ошибка'));
+                    alert('Ошибка: ' + result.error);
                 }
             } catch (error) {
                 alert('Ошибка сети: ' + error.message);
