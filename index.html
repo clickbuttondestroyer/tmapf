@@ -9,13 +9,18 @@
         :root {
             --bg: #f2f2f7; --text: #000; --muted: #8e8e93; --accent: #007aff;
             --card: rgba(255,255,255,0.8); --border: rgba(0,0,0,0.08);
-            --positive: #34c759; --danger: #ff3b30;
+            --positive: #34c759; --danger: #ff3b30; --tab-bg: rgba(255,255,255,0.9);
         }
         @media (prefers-color-scheme: dark) {
-            :root { --bg: #000; --text: #fff; --card: rgba(28,28,30,0.8); --border: rgba(255,255,255,0.15); }
+            :root { --bg: #000; --text: #fff; --card: rgba(28,28,30,0.8); --border: rgba(255,255,255,0.15); --tab-bg: rgba(28,28,30,0.9); }
         }
-        body { font-family: -apple-system, system-ui; background: var(--bg); color: var(--text); margin: 0; padding: 20px; padding-bottom: 120px; transition: 0.3s; overflow-x: hidden; }
+        body { font-family: -apple-system, system-ui; background: var(--bg); color: var(--text); margin: 0; padding: 20px; padding-bottom: 140px; transition: 0.3s; overflow-x: hidden; }
         
+        /* Screens */
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        /* Dashboard */
         .net-card { 
             background: linear-gradient(135deg, #1c1c1e, #444); color: #fff; 
             padding: 35px 20px; border-radius: 32px; text-align: center; margin-bottom: 30px;
@@ -23,6 +28,7 @@
         }
         .net-card.positive { background: linear-gradient(135deg, #007aff, #00c6ff); }
 
+        /* Lists & Groups */
         .section-header { font-size: 22px; font-weight: 700; margin: 25px 0 12px 5px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
         .list { background: var(--card); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 24px; padding: 5px 18px; margin-bottom: 20px; }
         .item { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--border); cursor: pointer; }
@@ -34,124 +40,130 @@
         .item-sub { font-size: 13px; color: var(--muted); display: block; }
         .item-val { font-weight: 700; font-size: 16px; }
 
+        .date-divider { font-size: 13px; font-weight: 700; color: var(--muted); margin: 15px 0 8px 10px; text-transform: uppercase; }
+
+        /* Tab Bar */
+        .tab-bar { 
+            position: fixed; bottom: 20px; left: 20px; right: 20px; 
+            background: var(--tab-bg); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            height: 70px; border-radius: 25px; display: flex; justify-content: space-around; align-items: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15); z-index: 90; border: 1px solid var(--border);
+        }
+        .tab-item { text-align: center; color: var(--muted); transition: 0.3s; flex: 1; cursor: pointer; }
+        .tab-item.active { color: var(--accent); }
+        .tab-icon { font-size: 24px; margin-bottom: 2px; }
+        .tab-label { font-size: 10px; font-weight: 600; }
+
+        /* Sheets */
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); opacity: 0; pointer-events: none; transition: 0.3s; z-index: 100; backdrop-filter: blur(5px); }
         .overlay.active { opacity: 1; pointer-events: auto; }
         .sheet { 
             position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg); 
             border-radius: 35px 35px 0 0; padding: 30px 25px; z-index: 101;
             transform: translateY(100%); transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1);
-            box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
             max-height: 90vh; overflow-y: auto;
         }
         .sheet.active { transform: translateY(0); }
         .sheet-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .close-btn { width: 32px; height: 32px; background: var(--border); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; color: var(--muted); }
+        .close-btn { width: 32px; height: 32px; background: var(--border); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; }
 
         input, select { 
             width: 100%; padding: 16px; border-radius: 16px; border: 1px solid var(--border);
             background: var(--card); color: var(--text); font-size: 17px; margin-bottom: 12px; outline: none; box-sizing: border-box;
         }
-        label { font-size: 13px; color: var(--muted); margin: 0 0 6px 6px; display: block; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
         .amount-big { font-size: 48px; text-align: center; font-weight: 800; border: none !important; background: none !important; margin: 10px 0 25px 0; color: var(--text); }
-
-        .btn-danger { width: 100%; padding: 16px; border-radius: 16px; border: none; background: var(--danger); color: #fff; font-size: 17px; font-weight: 700; margin-top: 10px; cursor: pointer; }
+        .btn-danger { width: 100%; padding: 16px; border-radius: 16px; border: none; background: var(--danger); color: #fff; font-size: 17px; font-weight: 700; margin-top: 10px; }
 
         .fab { 
-            position: fixed; bottom: 35px; right: 25px; width: 68px; height: 68px; 
+            position: fixed; bottom: 100px; right: 25px; width: 68px; height: 68px; 
             background: var(--text); color: var(--bg); border-radius: 34px; 
             border: none; font-size: 36px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 50;
-            display: flex; align-items: center; justify-content: center; transition: 0.2s;
+            display: flex; align-items: center; justify-content: center;
         }
         
-        details summary { list-style: none; outline: none; }
-        details summary::-webkit-details-marker { display: none; }
         .arrow { transition: 0.3s; font-size: 14px; color: var(--accent); }
         details[open] summary .arrow { transform: rotate(90deg); }
-
-        .loader { text-align: center; padding: 40px; color: var(--muted); }
         .hidden { display: none; }
     </style>
 </head>
 <body>
 
-    <div id="app">
+    <!-- Screen 1: Main -->
+    <div id="screen-main" class="screen active">
         <div class="net-card" id="netCard">
-            <div style="opacity: 0.7; font-size: 14px; text-transform: uppercase; font-weight: 700; letter-spacing: 1px;">Чистые активы</div>
+            <div style="opacity: 0.7; font-size: 14px; text-transform: uppercase; font-weight: 700;">Чистые активы</div>
             <div style="font-size: 52px; font-weight: 800; margin: 10px 0;" id="totalNet">...</div>
         </div>
 
         <details open>
             <summary class="section-header">
-                Активы <span style="display: flex; align-items: center; gap: 10px;">
-                    <span id="addProd" style="color: var(--accent); font-size: 14px; font-weight: 600;">+ Добавить</span>
-                    <span class="arrow">▶</span>
-                </span>
+                Активы <span style="display: flex; align-items: center; gap: 10px;"><span id="addProd" style="color: var(--accent); font-size: 14px; font-weight: 600;">+ Добавить</span><span class="arrow">▶</span></span>
             </summary>
             <div id="assetList" class="list"></div>
         </details>
 
         <details>
-            <summary class="section-header">
-                Обязательства <span class="arrow">▶</span>
-            </summary>
+            <summary class="section-header">Обязательства <span class="arrow">▶</span></summary>
             <div id="debtList" class="list"></div>
         </details>
 
-        <details open>
-            <summary class="section-header">
-                История <span class="arrow">▶</span>
-            </summary>
-            <div id="txList" class="list"></div>
-        </details>
+        <div class="section-header">История <span id="btnAllTx" style="color: var(--accent); font-size: 14px; font-weight: 600;">Все</span></div>
+        <div id="txGrouped"></div>
+    </div>
+
+    <!-- Screen 2: Cashback -->
+    <div id="screen-cashback" class="screen">
+        <div class="section-header">Хаб кэшбэка <span id="addCashback" style="color: var(--accent); font-size: 14px;">+ Добавить</span></div>
+        <div id="cashbackList"></div>
+    </div>
+
+    <!-- Tab Bar -->
+    <div class="tab-bar">
+        <div class="tab-item active" onclick="switchScreen('main')">
+            <div class="tab-icon">🏠</div>
+            <div class="tab-label">ГЛАВНАЯ</div>
+        </div>
+        <div class="tab-item" onclick="switchScreen('cashback')">
+            <div class="tab-icon">💎</div>
+            <div class="tab-label">КЭШБЭК</div>
+        </div>
     </div>
 
     <button class="fab" id="mainAdd">+</button>
-    <div class="overlay" id="overlay"></div>
+    <div class="overlay" id="overlay" onclick="closeAll()"></div>
 
     <!-- Sheet: Transaction -->
     <div class="sheet" id="txSheet">
-        <div class="sheet-header">
-            <span id="txSheetTitle" style="font-size: 20px; font-weight: 800;">Новая операция</span>
-            <div class="close-btn" onclick="closeAll()">✕</div>
-        </div>
-        
+        <div class="sheet-header"><span id="txSheetTitle" style="font-size: 20px; font-weight: 800;">Новая операция</span><div class="close-btn" onclick="closeAll()">✕</div></div>
         <input type="number" id="txAmount" class="amount-big" placeholder="0" inputmode="decimal">
-        
-        <label>Тип</label>
         <select id="txType">
             <option value="Расход">Расход</option>
             <option value="Доход">Доход</option>
             <option value="Перевод">Перевод</option>
         </select>
-        
         <label id="lblFrom">Откуда</label>
         <select id="txCard"></select>
-        
-        <div id="divTo" class="hidden">
-            <label>Куда</label>
-            <select id="txToCard"></select>
-        </div>
-        
-        <div id="divCat">
-            <label>Категория</label>
-            <select id="txCat"></select>
-        </div>
-
-        <label>Описание</label>
-        <input type="text" id="txDesc" placeholder="Заметки...">
-
+        <div id="divTo" class="hidden"><label>Куда</label><select id="txToCard"></select></div>
+        <div id="divCat"><label>Категория</label><select id="txCat"></select></div>
+        <input type="text" id="txDesc" placeholder="Описание...">
         <button id="btnDeleteTx" class="btn-danger hidden">Удалить операцию</button>
+    </div>
+
+    <!-- Sheet: Cashback Add -->
+    <div class="sheet" id="cashSheet">
+        <div class="sheet-header"><span style="font-size: 20px; font-weight: 800;">Добавить кэшбэк</span><div class="close-btn" onclick="closeAll()">✕</div></div>
+        <label>Карта</label>
+        <select id="cashCard"></select>
+        <label>Категория</label>
+        <input type="text" id="cashCat" placeholder="Напр. Супермаркеты">
+        <label>Процент (%)</label>
+        <input type="number" id="cashPercent" placeholder="5" inputmode="numeric">
     </div>
 
     <!-- Sheet: Product -->
     <div class="sheet" id="prodSheet">
-        <div class="sheet-header">
-            <span style="font-size: 20px; font-weight: 800;">Новый продукт</span>
-            <div class="close-btn" onclick="closeAll()">✕</div>
-        </div>
-        <label>Название</label>
-        <input type="text" id="pName" placeholder="Т-Банк, Наличные...">
-        <label>Вид</label>
+        <div class="sheet-header"><span style="font-size: 20px; font-weight: 800;">Новый продукт</span><div class="close-btn" onclick="closeAll()">✕</div></div>
+        <input type="text" id="pName" placeholder="Название...">
         <select id="pType">
             <option value="Дебетовая">💳 Дебетовая карта</option>
             <option value="Наличные">💵 Наличные</option>
@@ -159,50 +171,44 @@
             <option value="Инвестиции">📈 Инвестиции</option>
             <option value="Вклад">💰 Вклад / Счёт</option>
         </select>
-        <label>Баланс</label>
-        <input type="number" id="pBalance" placeholder="0" inputmode="decimal">
+        <input type="number" id="pBalance" placeholder="Баланс" inputmode="decimal">
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
-        
         const API_URL = window.location.origin + '/api';
-        let products = [];
-        let transactions = [];
-        let editingTxId = null;
+        let products = [], transactions = [], editingTxId = null;
 
-        const catIcons = {
-            "Продукты": "🛒", "Электроника": "💻", "Транспорт": "🚗", "Жилье": "🏠", 
-            "Здоровье": "💊", "Кредиты/Долги": "🏦", "Зарплата": "💰", "Проценты": "📈", 
-            "Инвестиции": "📊", "Кэшбэк": "💸", "Долг (вернули) (погашение)": "🤝", "Другое": "📦"
-        };
+        const catIcons = { "Продукты": "🛒", "Электроника": "💻", "Транспорт": "🚗", "Жилье": "🏠", "Здоровье": "💊", "Кредиты/Долги (погашение)": "🏦", "Зарплата": "💰", "Инвестиции": "📊", "Кэшбэк": "💸", "Другое": "📦" };
         const prodIcons = { "Дебетовая": "💳", "Наличные": "💵", "Кредит": "🏦", "Инвестиции": "📈", "Вклад": "💰" };
-        const cats = {
-            "Доход": ["Зарплата", "Проценты", "Инвестиции", "Кэшбэк", "Долг (вернули) (погашение)", "Другое"],
-            "Расход": ["Продукты", "Электроника", "Транспорт", "Жилье", "Здоровье", "Кредиты/Долги (погашение)", "Другое"]
-        };
+        const cats = { "Доход": ["Зарплата", "Проценты", "Инвестиции", "Кэшбэк", "Долг (вернули)", "Другое"], "Расход": ["Продукты", "Электроника", "Транспорт", "Жилье", "Здоровье", "Кредиты/Долги (погашение)", "Другое"] };
 
         async function init() {
             try {
-                const res = await fetch(`${API_URL}/getData`);
-                const data = await res.json();
+                const [dRes, cRes] = await Promise.all([fetch(`${API_URL}/getData`), fetch(`${API_URL}/getCashback`)]);
+                const data = await dRes.json();
+                const cData = await cRes.json();
                 products = data.products || [];
                 transactions = data.transactions || [];
-                render();
+                render(cData.categories || []);
             } catch (e) { console.error(e); }
         }
 
-        function render() {
+        function switchScreen(name) {
+            document.querySelectorAll('.screen, .tab-item').forEach(el => el.classList.remove('active'));
+            document.getElementById(`screen-${name}`).classList.add('active');
+            document.querySelector(`.tab-item[onclick*="${name}"]`).classList.add('active');
+        }
+
+        function render(cashback = []) {
             const assetList = document.getElementById('assetList');
             const debtList = document.getElementById('debtList');
-            const txList = document.getElementById('txList');
-            const txCard = document.getElementById('txCard');
-            const txToCard = document.getElementById('txToCard');
+            const txGrouped = document.getElementById('txGrouped');
+            const txCard = document.getElementById('txCard'), txToCard = document.getElementById('txToCard'), cashCard = document.getElementById('cashCard');
             
-            assetList.innerHTML = ''; debtList.innerHTML = ''; txList.innerHTML = ''; 
-            const defaultOpt = '<option value="" disabled selected>Выбрать счет</option>';
-            txCard.innerHTML = defaultOpt; txToCard.innerHTML = defaultOpt;
+            assetList.innerHTML = ''; debtList.innerHTML = ''; txGrouped.innerHTML = '';
+            txCard.innerHTML = txToCard.innerHTML = cashCard.innerHTML = '<option value="" disabled selected>Выбрать счет</option>';
             
             let total = 0;
             products.forEach(p => {
@@ -212,60 +218,65 @@
                 if (isDebt) { debtList.innerHTML += html; total -= p.balance; }
                 else { assetList.innerHTML += html; total += p.balance; }
                 const opt = `<option value="${p.name}">${p.name}</option>`;
-                txCard.innerHTML += opt; txToCard.innerHTML += opt;
+                txCard.innerHTML += opt; txToCard.innerHTML += opt; cashCard.innerHTML += opt;
             });
 
+            // Группировка транзакций по датам
+            const groups = {};
             transactions.forEach(t => {
-                const isPlus = t.type === 'Доход';
-                const icon = catIcons[t.category] || (isPlus ? "➕" : "➖");
-                const amount = parseFloat(t.amount.toString().replace(',', '.'));
-                const el = document.createElement('div');
-                el.className = 'item';
-                el.innerHTML = `<div class="item-icon">${icon}</div><div class="item-info"><span class="item-name">${t.category || t.type}</span><span class="item-sub">${t.card} • ${t.date}</span></div><span class="item-val" style="color: ${isPlus ? 'var(--positive)' : 'inherit'}">${isPlus ? '+' : ''}${amount.toLocaleString()} ₽</span>`;
-                el.onclick = () => openEditTx(t);
-                txList.appendChild(el);
+                if (!groups[t.date]) groups[t.date] = [];
+                groups[t.date].push(t);
+            });
+
+            Object.entries(groups).forEach(([date, txs]) => {
+                const div = document.createElement('div');
+                div.innerHTML = `<div class="date-divider">${date}</div>`;
+                const list = document.createElement('div');
+                list.className = 'list';
+                txs.forEach(t => {
+                    const isPlus = t.type === 'Доход';
+                    const icon = catIcons[t.category] || (isPlus ? "➕" : "➖");
+                    const item = document.createElement('div');
+                    item.className = 'item';
+                    item.innerHTML = `<div class="item-icon">${icon}</div><div class="item-info"><span class="item-name">${t.category || t.type}</span><span class="item-sub">${t.card}</span></div><span class="item-val" style="color: ${isPlus ? 'var(--positive)' : 'inherit'}">${isPlus ? '+' : ''}${parseFloat(t.amount).toLocaleString()} ₽</span>`;
+                    item.onclick = () => openEditTx(t);
+                    list.appendChild(item);
+                });
+                div.appendChild(list);
+                txGrouped.appendChild(div);
+            });
+
+            // Рендер кэшбэка
+            const cbList = document.getElementById('cashbackList');
+            cbList.innerHTML = '';
+            if (cashback.length === 0) cbList.innerHTML = '<div class="loader">Категории не занесены</div>';
+            const cbGrouped = {};
+            cashback.forEach(c => {
+                if (!cbGrouped[c.card]) cbGrouped[c.card] = [];
+                cbGrouped[c.card].push(c);
+            });
+            Object.entries(cbGrouped).forEach(([card, cats]) => {
+                const div = document.createElement('div');
+                div.innerHTML = `<div class="section-header">${card}</div>`;
+                const list = document.createElement('div');
+                list.className = 'list';
+                cats.forEach(c => {
+                    list.innerHTML += `<div class="item"><div class="item-info"><span class="item-name">${c.category}</span></div><span class="item-val" style="color: var(--accent)">${c.percent}%</span></div>`;
+                });
+                div.appendChild(list);
+                cbList.appendChild(div);
             });
 
             document.getElementById('totalNet').innerText = `${total.toLocaleString()} ₽`;
             document.getElementById('netCard').className = total >= 0 ? 'net-card positive' : 'net-card';
         }
 
-        function openEditTx(t) {
-            editingTxId = t.id;
-            document.getElementById('txSheetTitle').innerText = 'Редактировать';
-            document.getElementById('txAmount').value = t.amount.toString().replace(',', '.');
-            document.getElementById('txType').value = t.type;
-            document.getElementById('txCard').value = t.card;
-            document.getElementById('txDesc').value = t.description || '';
-            document.getElementById('btnDeleteTx').classList.remove('hidden');
-            
-            document.getElementById('divTo').classList.toggle('hidden', t.type !== 'Перевод');
-            document.getElementById('divCat').classList.toggle('hidden', t.type === 'Перевод');
-            
-            showSheet('txSheet', true);
-            setTimeout(() => {
-                document.getElementById('txCat').value = t.category;
-            }, 50);
-        }
-
-        document.getElementById('mainAdd').onclick = () => {
-            editingTxId = null;
-            document.getElementById('txSheetTitle').innerText = 'Новая операция';
-            document.getElementById('btnDeleteTx').classList.add('hidden');
-            showSheet('txSheet');
-        };
-        document.getElementById('addProd').onclick = (e) => { e.preventDefault(); showSheet('prodSheet'); };
-        document.getElementById('overlay').onclick = closeAll;
-
         function showSheet(id, isEdit = false) {
             const sheet = document.getElementById(id);
-            if (!isEdit) {
-                sheet.querySelectorAll('input').forEach(i => i.value = '');
-                sheet.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
-            }
+            if (!isEdit) { sheet.querySelectorAll('input').forEach(i => i.value = ''); sheet.querySelectorAll('select').forEach(s => s.selectedIndex = 0); }
             document.getElementById('overlay').classList.add('active');
             sheet.classList.add('active');
-            updateCats();
+            if (id === 'txSheet') updateCats();
             tg.MainButton.offClick(handleSaveWrapper);
             tg.MainButton.setText('СОХРАНИТЬ').show();
             tg.MainButton.onClick(handleSaveWrapper);
@@ -274,83 +285,49 @@
 
         let currentSheetId = null;
         const handleSaveWrapper = () => handleSave(currentSheetId);
+        function closeAll() { document.querySelectorAll('.sheet, .overlay').forEach(el => el.classList.remove('active')); tg.MainButton.hide(); }
 
-        function closeAll() {
-            document.querySelectorAll('.sheet, .overlay').forEach(el => el.classList.remove('active'));
-            tg.MainButton.hide();
+        document.getElementById('mainAdd').onclick = () => { editingTxId = null; document.getElementById('txSheetTitle').innerText = 'Новая операция'; document.getElementById('btnDeleteTx').classList.add('hidden'); showSheet('txSheet'); };
+        document.getElementById('addProd').onclick = (e) => { e.preventDefault(); showSheet('prodSheet'); };
+        document.getElementById('addCashback').onclick = () => showSheet('cashSheet');
+
+        async function handleSave(id) {
+            let endpoint = id === 'txSheet' ? '/addTransaction' : (id === 'prodSheet' ? '/addProduct' : '/addCashback');
+            let data = {};
+            if (id === 'txSheet') data = { type: document.getElementById('txType').value, amount: document.getElementById('txAmount').value, card: document.getElementById('txCard').value, toCard: document.getElementById('txToCard').value, category: document.getElementById('txCat').value, description: document.getElementById('txDesc').value };
+            else if (id === 'prodSheet') data = { name: document.getElementById('pName').value, type: document.getElementById('pType').value, balance: document.getElementById('pBalance').value };
+            else data = { card: document.getElementById('cashCard').value, category: document.getElementById('cashCat').value, percent: document.getElementById('cashPercent').value };
+
+            tg.MainButton.showProgress();
+            try {
+                const res = await fetch(`${API_URL}${endpoint}`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) });
+                if (res.ok) { tg.HapticFeedback.notificationOccurred('success'); closeAll(); init(); }
+            } catch (e) { alert('Ошибка сети'); }
+            finally { tg.MainButton.hideProgress(); }
         }
 
-        document.getElementById('txType').onchange = (e) => {
-            const type = e.target.value;
+        function updateCats() {
+            const type = document.getElementById('txType').value;
+            document.getElementById('txCat').innerHTML = (cats[type] || []).map(c => `<option value="${c}">${c}</option>`).join('');
+        }
+        document.getElementById('txType').onchange = () => {
+            const type = document.getElementById('txType').value;
             document.getElementById('divTo').classList.toggle('hidden', type !== 'Перевод');
             document.getElementById('divCat').classList.toggle('hidden', type === 'Перевод');
             document.getElementById('lblFrom').innerText = type === 'Доход' ? 'Куда' : 'Откуда';
             updateCats();
         };
 
-        function updateCats() {
-            const type = document.getElementById('txType').value;
-            const catSelect = document.getElementById('txCat');
-            const currentVal = catSelect.value;
-            catSelect.innerHTML = (cats[type] || []).map(c => `<option value="${c}">${c}</option>`).join('');
-            if (currentVal) catSelect.value = currentVal;
-        }
-
-        document.getElementById('btnDeleteTx').onclick = async () => {
-            if (!confirm('Удалить эту операцию? Баланс карты будет восстановлен.')) return;
-            tg.MainButton.showProgress();
-            try {
-                const res = await fetch(`${API_URL}/deleteTransaction`, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ id: editingTxId })
-                });
-                if (res.ok) {
-                    tg.HapticFeedback.notificationOccurred('success');
-                    closeAll();
-                    init();
-                }
-            } catch (e) { alert('Ошибка'); }
-            finally { tg.MainButton.hideProgress(); }
-        };
-
-        async function handleSave(id) {
-            if (editingTxId) {
-                alert('Редактирование пока работает через Удаление + Новая запись (для безопасности баланса). Скоро добавлю прямой эдит!');
-                return;
-            }
-            let endpoint = id === 'txSheet' ? '/addTransaction' : '/addProduct';
-            let data = id === 'txSheet' ? {
-                type: document.getElementById('txType').value,
-                amount: document.getElementById('txAmount').value,
-                card: document.getElementById('txCard').value,
-                toCard: document.getElementById('txToCard').value,
-                category: document.getElementById('txCat').value,
-                description: document.getElementById('txDesc').value
-            } : {
-                name: document.getElementById('pName').value,
-                type: document.getElementById('pType').value,
-                balance: document.getElementById('pBalance').value
-            };
-
-            if (id === 'txSheet' && (!data.amount || !data.card)) return alert('Заполните данные');
-            tg.MainButton.showProgress();
-            try {
-                const res = await fetch(`${API_URL}${endpoint}`, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(data)
-                });
-                if (res.ok) {
-                    tg.HapticFeedback.notificationOccurred('success');
-                    closeAll();
-                    init();
-                } else {
-                    const err = await res.json();
-                    alert(err.error);
-                }
-            } catch (error) { alert('Ошибка сети'); }
-            finally { tg.MainButton.hideProgress(); }
+        function openEditTx(t) {
+            editingTxId = t.id;
+            document.getElementById('txSheetTitle').innerText = 'Редактировать';
+            document.getElementById('txAmount').value = t.amount;
+            document.getElementById('txType').value = t.type;
+            document.getElementById('txCard').value = t.card;
+            document.getElementById('txDesc').value = t.description || '';
+            document.getElementById('btnDeleteTx').classList.remove('hidden');
+            showSheet('txSheet', true);
+            setTimeout(() => document.getElementById('txCat').value = t.category, 50);
         }
 
         init();

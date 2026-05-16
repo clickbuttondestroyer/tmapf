@@ -25,20 +25,32 @@ export default async function handler(req, res) {
         const rowToDelete = logRows.find(r => r.rowNumber === id);
 
         if (rowToDelete) {
-            const type = rowToDelete.get('Тип операции') || rowToDelete.get('Type');
-            const amount = parseFloat((rowToDelete.get('Сумма') || rowToDelete.get('Amount')).toString().replace(',', '.'));
-            const card = rowToDelete.get('Карта') || rowToDelete.get('Card');
+            const data = rowToDelete.toObject();
+            const find = (keys) => {
+                const key = Object.keys(data).find(k => keys.some(s => k.toLowerCase().includes(s.toLowerCase())));
+                return key ? data[key] : null;
+            };
 
-            // Возвращаем деньги на баланс (обратная логика)
+            const type = find(['type', 'тип']);
+            const amount = parseFloat((find(['amount', 'сумма']) || '0').toString().replace(',', '.'));
+            const card = find(['card', 'карта']);
+
+            // Возвращаем деньги на баланс
             const prodRows = await prodSheet.getRows();
-            const cardRow = prodRows.find(r => (r.get('Name') || r.get('Название')) === card);
+            const cardRow = prodRows.find(r => {
+                const pData = r.toObject();
+                const name = pData['Name'] || pData['Название'] || pData['name'] || pData['название'];
+                return name === card;
+            });
             
             if (cardRow) {
-                let currentBalance = parseFloat(cardRow.get('Balance') || cardRow.get('Баланс'));
-                if (type === 'Расход') currentBalance += amount;
-                else if (type === 'Доход') currentBalance -= amount;
+                const bKey = Object.keys(cardRow.toObject()).find(k => k.toLowerCase().includes('balance') || k.toLowerCase().includes('баланс'));
+                let currentBalance = parseFloat(cardRow.get(bKey).toString().replace(',', '.'));
                 
-                cardRow.set('Balance', currentBalance.toString());
+                if (type.toLowerCase().includes('расход')) currentBalance += amount;
+                else if (type.toLowerCase().includes('доход')) currentBalance -= amount;
+                
+                cardRow.set(bKey, currentBalance.toString());
                 await cardRow.save();
             }
 
